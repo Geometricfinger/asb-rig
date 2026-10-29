@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">ASB</string>
-    <string name="gate_title">Unlock ASB</string>
+    <string name="app_name">O Iris</string>
+    <string name="gate_title">Unlock O Iris</string>
     <string name="gate_subtitle">Fingerprint or Class 3 face unlock</string>
     <string name="research_notice">Research tool. Signatures are observations with benign causes, never an identity.</string>
     <string name="osm_attribution">© OpenStreetMap contributors</string>

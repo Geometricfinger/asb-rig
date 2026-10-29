@@ -10,7 +10,7 @@ LUKS2 (Pi), SQLCipher (phone), 30-day retention, hashed IDs, no cloud.
 
 ## Where it is enforced
 
-asb/store/, asb/guard/retention.py, asb/guard/privacy.hash_identifier
+oiris/store/, oiris/guard/retention.py, oiris/guard/privacy.hash_identifier
 
 ## Changing it
 

@@ -1,8 +1,8 @@
 import numpy as np
 
-from asb.features import optical, thermal, eye, vital, rf, baseline
-from asb.fusion import stack
-from asb.schema import Health, Score
+from oiris.features import optical, thermal, eye, vital, rf, baseline
+from oiris.fusion import stack
+from oiris.schema import Health, Score
 
 
 def test_glint_found_only_with_led_difference():
@@ -101,7 +101,7 @@ def test_drift_detector_and_type():
 
 
 def test_fingerprint_tracker():
-    from asb.modules.fingerprint import FingerprintTracker
+    from oiris.modules.fingerprint import FingerprintTracker
     t = FingerprintTracker(baseline_windows=5)
     for _ in range(5):
         t.observe("k1", {"interval_mean": 1.0, "tx_power": 0.0})
@@ -132,7 +132,7 @@ def test_single_family_is_fyi_two_is_attention():
 
 
 def test_no_class_fields_in_fusion_output():
-    from asb.guard.vocabulary import check_output
+    from oiris.guard.vocabulary import check_output
     check_output(stack.fuse([S("S_glint", 0.9), S("S_rf", 0.9)]))
 
 
@@ -155,7 +155,7 @@ def test_auc_edge():
 
 
 def test_liveness_indicators():
-    from asb.modules.liveness import indicators
+    from oiris.modules.liveness import indicators
     r = indicators([S("S_live", 0.9), S("S_eye", 0.8), S("S_voice", 0.1)])
     assert r["a11"] and set(r["families_absent"]) == {"vital", "eye"}
     assert "silicone mask" in r["limit"]

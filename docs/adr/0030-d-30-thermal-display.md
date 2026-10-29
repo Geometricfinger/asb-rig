@@ -10,7 +10,7 @@ Grayscale 10–45 °C fixed scale default; color overlay is a toggle.
 
 ## Where it is enforced
 
-asb/features/thermal.py render()
+oiris/features/thermal.py render()
 
 ## Changing it
 

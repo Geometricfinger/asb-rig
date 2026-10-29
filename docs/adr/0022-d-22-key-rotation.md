@@ -10,7 +10,7 @@ New Noise handshake every session; Rekey ≤1,000 messages or 10 min; static key
 
 ## Where it is enforced
 
-asb/security/channel.py
+oiris/security/channel.py
 
 ## Changing it
 

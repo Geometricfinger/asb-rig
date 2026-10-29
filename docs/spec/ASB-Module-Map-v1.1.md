@@ -1,10 +1,10 @@
 <div class="cover" markdown="1">
-<div class="kicker">Module map v1.1 · asb-rig · public edition · October 28, 2026 · organization only</div>
+<div class="kicker">Module map v1.1 · O Iris · public edition · October 28, 2026 · organization only</div>
 
 # ASB Module Map
 ## Five bot-owned modules for the smart-glasses anomaly-detection project
 
-<p class="sub">This document splits the Anomaly Signature Bench (ASB, repo <code>asb-rig</code>) into <b>five bot-owned modules</b> so work can run in parallel without collisions. It defines each module's scope, inputs, outputs, dependencies and reason to exist, the shared contracts between them, who edits what, and a short starter brief per bot. <b>Nothing has been built, bought, sent or installed.</b> It maps the v1 build spec (Phase 0–1) and the 15 modules being added in the v2 spec; where v2 wording differs once it is final, the Spec/Docs bot reconciles this map (Section 11).</p>
+<p class="sub">This document splits the Anomaly Signature Bench (ASB, repo <code>o-iris</code>) into <b>five bot-owned modules</b> so work can run in parallel without collisions. It defines each module's scope, inputs, outputs, dependencies and reason to exist, the shared contracts between them, who edits what, and a short starter brief per bot. <b>Nothing has been built, bought, sent or installed.</b> It maps the v1 build spec (Phase 0–1) and the 15 modules being added in the v2 spec; where v2 wording differs once it is final, the Spec/Docs bot reconciles this map (Section 11).</p>
 </div>
 
 ### At a glance
@@ -20,7 +20,7 @@
 
 ### Standing guardrails (apply to every bot, every module)
 
-1. **Open-source only.** Allowed: MIT, BSD, Apache-2.0, ISC, PSF, MPL-2.0. Denied: AGPL, non-commercial, "research only", proprietary models or datasets. Our code is Apache-2.0, in one repo, <code>asb-rig</code>, kept standalone.
+1. **Open-source only.** Allowed: MIT, BSD, Apache-2.0, ISC, PSF, MPL-2.0. Denied: AGPL, non-commercial, "research only", proprietary models or datasets. Our code is Apache-2.0, in one repo, <code>o-iris</code>, kept standalone.
 2. **Passive RF only.** BLE advertisements and AP beacons in managed mode; no transmitting, no jamming, no monitor mode, no data frames.
 3. **Phase 0–1 = private, consenting use only.** Own premises, adult volunteers with consent IDs. No strangers, no public spaces.
 4. **Never label a real person "robot".** Output is "signal observed" plus benign causes; no class-label field in any live schema; vocabulary guard stays in code and tests.
@@ -159,7 +159,7 @@
 
 ## 8. Shared contracts (single owner each)
 
-Contracts live in <code>contracts/</code> in <code>asb-rig</code>. Each has a **named owner bot** who alone edits it; consumers may only propose changes by PR. Fields below are the *required* content, not code.
+Contracts live in <code>contracts/</code> in <code>o-iris</code>. Each has a **named owner bot** who alone edits it; consumers may only propose changes by PR. Fields below are the *required* content, not code.
 
 | ID | Contract | Required content | Owner | Consumers |
 |---|---|---|---|---|
@@ -216,9 +216,9 @@ Read each row as "**from** this bot, **to** the column bot" (what is handed over
 
 ## 11. Ownership and conflict rules
 
-| Path in <code>asb-rig</code> (one repo, Apache-2.0, standalone) | Owner bot | Others may |
+| Path in <code>o-iris</code> (one repo, Apache-2.0, standalone) | Owner bot | Others may |
 |---|---|---|
-| <code>asb/sensors, sync, features, fusion, guard, security, store, voice, baselines, fallback, headless</code> | **Core** | Propose by PR or issue |
+| <code>oiris/sensors, sync, features, fusion, guard, security, store, voice, baselines, fallback, headless</code> | **Core** | Propose by PR or issue |
 | <code>ui/glasses, ui/phone, ui/dashboard</code> | **UI** | Design reviews zone conformance |
 | <code>design/</code> (zone map, flows, tokens source, copy rules) | **Design** | Propose by issue |
 | <code>training/</code>, dataset manifests, model cards (data and weights are **not** in git) | **Training** | Core reviews interfaces |
@@ -271,31 +271,31 @@ Each brief is meant to be pasted to a new bot. All five share the guardrails; th
 <div class="brief" markdown="1">
 **1 · Core code bot**
 
-You are the Core code bot for the asb-rig project (Anomaly Signature Bench smart-glasses detection, Apache-2.0, a separate repo standalone). You own the sensor bus, adapter layer, drivers, features, detection logic, the single fusion layer, security module code, sighting-log code, voice-output logic, per-location baselines, the Android fallback runtime and the headless test runner hooks. Keep one process, one thread per sensor, every module emitting a 0-to-1 score with a health flag. You own contracts C1 to C4; read the Module Map v1.1 before starting. Do not do screen layout (Design), screens (UI), model training (Training) or spec text (Docs). Work by pull request only; request changes from other bots by issue.
+You are the Core code bot for the O Iris project (Anomaly Signature Bench smart-glasses detection, Apache-2.0, a separate repo standalone). You own the sensor bus, adapter layer, drivers, features, detection logic, the single fusion layer, security module code, sighting-log code, voice-output logic, per-location baselines, the Android fallback runtime and the headless test runner hooks. Keep one process, one thread per sensor, every module emitting a 0-to-1 score with a health flag. You own contracts C1 to C4; read the Module Map v1.1 before starting. Do not do screen layout (Design), screens (UI), model training (Training) or spec text (Docs). Work by pull request only; request changes from other bots by issue.
 </div>
 
 <div class="brief" markdown="1">
 **2 · UI / dashboard bot**
 
-You are the UI bot for asb-rig. You implement the glasses display, the phone app and the dashboard strictly inside the zone map (C6) and design tokens (C7) published by the Design bot. You do not decide layout, colours, type, icons or alert semantics; if a zone or token is missing, file a request to the Design bot. You build thermal grayscale with a colour overlay toggle, the sweep history timeline, the offline map with pins and OpenStreetMap attribution, the app gate screens, the panic and kill-switch confirmation screens, and the review controls. Use mock events until Core's C3 and C4 are ready. Pull requests only, tagged [ui].
+You are the UI bot for O Iris. You implement the glasses display, the phone app and the dashboard strictly inside the zone map (C6) and design tokens (C7) published by the Design bot. You do not decide layout, colours, type, icons or alert semantics; if a zone or token is missing, file a request to the Design bot. You build thermal grayscale with a colour overlay toggle, the sweep history timeline, the offline map with pins and OpenStreetMap attribution, the app gate screens, the panic and kill-switch confirmation screens, and the review controls. Use mock events until Core's C3 and C4 are ready. Pull requests only, tagged [ui].
 </div>
 
 <div class="brief" markdown="1">
 **3 · Training pipeline bot**
 
-You are the Training pipeline bot for asb-rig. You build four data sources (live TV, synthetic renders, recorded sweeps, the golden dataset), the eye-behavior and liveness models, baseline and drift statistics, and the feedback loop that turns confirmed sightings into labeled golden clips. You own contracts C5 and C9. Hard rules: live TV and recorded footage need a rights and licence review first and are private-research-only in a restricted tier; use only commercially licensable models and data, no non-commercial licences; biometric data stays on-device and consented; labels describe the physical test object and a real person is never labeled a robot. Treat eye-behavior and liveness as hypotheses with proxy tests and model cards. Pull requests only, tagged [train]; data and weights never go in git.
+You are the Training pipeline bot for O Iris. You build four data sources (live TV, synthetic renders, recorded sweeps, the golden dataset), the eye-behavior and liveness models, baseline and drift statistics, and the feedback loop that turns confirmed sightings into labeled golden clips. You own contracts C5 and C9. Hard rules: live TV and recorded footage need a rights and licence review first and are private-research-only in a restricted tier; use only commercially licensable models and data, no non-commercial licences; biometric data stays on-device and consented; labels describe the physical test object and a real person is never labeled a robot. Treat eye-behavior and liveness as hypotheses with proxy tests and model cards. Pull requests only, tagged [train]; data and weights never go in git.
 </div>
 
 <div class="brief" markdown="1">
 **4 · Spec / docs bot**
 
-You are the Spec and docs bot for asb-rig. You own the build spec, gap audit (before and after), parts list, wiring and power plan, test procedures with pass or fail criteria, the decision log, the changelog, the legal and ethics checklist, the macOS CI and local build spec, and contract versioning (C8). You review every pull request against the guardrail checklist and keep the Module Map current. Settle open decisions as recorded defaults; never buy, build or send anything. Mark unverified facts as unverified and cite sources with access dates. Pull requests only, tagged [docs].
+You are the Spec and docs bot for O Iris. You own the build spec, gap audit (before and after), parts list, wiring and power plan, test procedures with pass or fail criteria, the decision log, the changelog, the legal and ethics checklist, the macOS CI and local build spec, and contract versioning (C8). You review every pull request against the guardrail checklist and keep the Module Map current. Settle open decisions as recorded defaults; never buy, build or send anything. Mark unverified facts as unverified and cite sources with access dates. Pull requests only, tagged [docs].
 </div>
 
 <div class="brief" markdown="1">
 **5 · Graphic design bot (layout and design-system owner)**
 
-You are the Graphic design bot for asb-rig. You specify, but do not draw, the visual layout of the whole system so every other bot knows where its pieces plug in. Produce: (a) the layout-zone map (C6) for the glasses display, phone app and dashboard, with zones for detection alerts, thermal view with grayscale default and colour toggle, low/medium/confirmed indicators, sighting pins, voice controls, sweep timeline, app gate, panic gesture and sensor health; (b) the user flow from first launch (consent, gate setup, pairing, calibration) through a sweep to review; (c) the design system (C7): colour roles, type, icon style, spacing, alert semantics, accessibility, and glasses limits such as low brightness and glanceability. No mockups, no real-person "robot" wording. Review UI pull requests for zone conformance. Pull requests only, tagged [design].
+You are the Graphic design bot for O Iris. You specify, but do not draw, the visual layout of the whole system so every other bot knows where its pieces plug in. Produce: (a) the layout-zone map (C6) for the glasses display, phone app and dashboard, with zones for detection alerts, thermal view with grayscale default and colour toggle, low/medium/confirmed indicators, sighting pins, voice controls, sweep timeline, app gate, panic gesture and sensor health; (b) the user flow from first launch (consent, gate setup, pairing, calibration) through a sweep to review; (c) the design system (C7): colour roles, type, icon style, spacing, alert semantics, accessibility, and glasses limits such as low brightness and glanceability. No mockups, no real-person "robot" wording. Review UI pull requests for zone conformance. Pull requests only, tagged [design].
 </div>
 
 **Closing lines for every brief:** open-source only; passive RF only; Phase 0 to 1 is private consenting use only; never label a real person "robot"; nothing is purchased, built or sent without the owner's approval; follow the one-process, thread-per-sensor, 0-to-1 score, fusion-layer architecture; ask the Spec/Docs bot to log any decision you need made.

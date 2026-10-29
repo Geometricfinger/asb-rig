@@ -1,0 +1,2 @@
+# oiris.guard — required guards (not feature-flagged)
+`vocabulary` (no person labels; forbidden class fields), `phrases` (whitelisted templates, ≤8 words), `consent` (scoped, expiring, withdrawable), `privacy` (no audio, 64×64 crops for people, HMAC'd identifiers, GPS rounding), `retention` (30-day purge, keep flag), `radio` (passive-only, refuses monitor mode). **Depends on**: stdlib/numpy only. Changes here need an ADR and owner sign-off.

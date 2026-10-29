@@ -10,7 +10,7 @@ AES-256-GCM (Keystore, files) / AES-256-XTS (LUKS2); ChaCha20-Poly1305 and X2551
 
 ## Where it is enforced
 
-asb/security/aead.py, channel.py, hashchain.py
+oiris/security/aead.py, channel.py, hashchain.py
 
 ## Changing it
 

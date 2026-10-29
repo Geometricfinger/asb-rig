@@ -2,13 +2,13 @@ import json
 import socket
 import pytest
 
-from asb.config import Config, ConfigError
-from asb.modules.voice import VoiceOutput, NullTts
-from asb.modules.appgate import AppGate
-from asb.security.keys import KeyStore
-from asb.security.panic import PanicController
-from asb import headless, cli
-from asb.adapters import drivers
+from oiris.config import Config, ConfigError
+from oiris.modules.voice import VoiceOutput, NullTts
+from oiris.modules.appgate import AppGate
+from oiris.security.keys import KeyStore
+from oiris.security.panic import PanicController
+from oiris import headless, cli
+from oiris.adapters import drivers
 
 
 def test_config_defaults_and_validation(tmp_path):
@@ -26,7 +26,7 @@ def test_config_defaults_and_validation(tmp_path):
 
 
 def test_feature_flags_disable_modules():
-    from asb.engine import Engine
+    from oiris.engine import Engine
     c = Config(); c.flags["M-03"] = False; c.flags["M-07"] = False
     names = {m.name for m in Engine(c).score_modules}
     assert "S_rf_drift" not in names and "S_newobj" not in names and "S_eye" not in names
@@ -154,7 +154,7 @@ def test_iw_parser():
 
 def test_model_slot(tmp_path):
     import hashlib
-    from asb.models import ModelSlot, load_into
+    from oiris.models import ModelSlot, load_into
     w = tmp_path / "m.bin"; w.write_bytes(b"weights")
     man = {"name": "eye", "version": "1", "license": "Apache-2.0", "file": "m.bin",
            "sha256": hashlib.sha256(b"weights").hexdigest(), "hypothesis": "h", "output_range": [0, 1], "data_tier": "synthetic"}

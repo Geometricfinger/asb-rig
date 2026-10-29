@@ -10,7 +10,7 @@ Raw eye/voice never stored; derived traces 30 days; enrollments until withdrawal
 
 ## Where it is enforced
 
-asb/guard/retention.py
+oiris/guard/retention.py
 
 ## Changing it
 

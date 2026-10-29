@@ -1,2 +1,0 @@
-# asb.fusion — one fusion layer
-**Purpose**: scores → six family values (confidence-weighted max) → logistic regression with a missing-family mask → `anomaly_index`, `level`, `signatures`. Evidence rule: ≥2 families = ATTENTION, 1 = FYI, ≥2 unhealthy = suppressed. **Inputs**: `list[Score]`, `FusionModel`. **Outputs**: dict (checked by the vocabulary guard). **Depends on**: `asb.schema`. Weights load through `load_weights()` which falls back to last-good. `train()` and `auc()` support lab evaluation (LOSO is the experimenter's job).

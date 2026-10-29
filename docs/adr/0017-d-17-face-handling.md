@@ -10,7 +10,7 @@ Operator-aimed; transient eye-ROI detection in RAM; no templates; no stored face
 
 ## Where it is enforced
 
-asb/guard/privacy.py (64x64 crops only)
+oiris/guard/privacy.py (64x64 crops only)
 
 ## Changing it
 

@@ -6,7 +6,7 @@
 
 ## Decision
 
-New repo `asb-rig`, Apache-2.0, standalone.
+New repo `o-iris`, Apache-2.0, standalone.
 
 ## Where it is enforced
 

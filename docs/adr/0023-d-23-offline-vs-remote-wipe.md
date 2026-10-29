@@ -10,7 +10,7 @@ Crypto-erase; triggers: panic, 10 failed unlocks, signed wipe from the paired ph
 
 ## Where it is enforced
 
-asb/security/panic.py, keys.crypto_erase
+oiris/security/panic.py, keys.crypto_erase
 
 ## Changing it
 

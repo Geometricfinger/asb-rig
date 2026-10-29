@@ -10,7 +10,7 @@ Behavioral BLE/AP + AP clock skew on fixed owned emitters; no IQ-level RFFI; dri
 
 ## Where it is enforced
 
-asb/features/rf.py, asb/modules/fingerprint.py
+oiris/features/rf.py, oiris/modules/fingerprint.py
 
 ## Changing it
 

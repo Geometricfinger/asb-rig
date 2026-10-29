@@ -13,7 +13,7 @@
     <application
         android:allowBackup="false"
         android:dataExtractionRules="@xml/no_backup"
-        android:label="ASB"
+        android:label="O Iris"
         android:theme="@android:style/Theme.Material.NoActionBar"
         tools:targetApi="s">
         <activity android:name=".MainActivity" android:exported="true">

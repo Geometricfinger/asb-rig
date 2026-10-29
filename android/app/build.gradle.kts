@@ -6,10 +6,10 @@ plugins {
 val commit: String = System.getenv("ASB_COMMIT") ?: "dev"
 
 android {
-    namespace = "org.asbrig.app"
+    namespace = "org.oiris.app"
     compileSdk = 34
     defaultConfig {
-        applicationId = "org.asbrig.app"
+        applicationId = "org.oiris.app"
         minSdk = 29
         targetSdk = 34
         versionCode = 1

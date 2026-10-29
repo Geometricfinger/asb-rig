@@ -243,7 +243,7 @@ Default view: linear 8-bit grayscale on a fixed 10–45 °C scale (legend always
 
 ### M-09 Headless test mode and golden dataset
 
-**Design.** `asb --headless --replay <clip-set>` runs the full pipeline with <b>replay adapters</b> (recorded timestamps), a <b>virtual clock</b>, GPIO/LED stubs that assert the LED is never driven, no network and no hardware. Golden dataset = versioned clips (derived features and non-person NoIR/thermal arrays; volunteers' raw eye/voice never included) with `manifest.json` (SHA-256 per file, label, source, consent ID, license, split). Splits are subject-disjoint: <b>train</b>, <b>dev</b>, and a <b>frozen test</b> split whose manifest hash is recorded in the decision log at G0; the frozen split never changes (re-freeze needs a new decision and resets claims). Stored as an encrypted archive on local disk; git holds only manifests and code. Runs on Linux (box or laptop), Pi and Mac. <b>Gate.</b> E-23, E-25.
+**Design.** `oiris --headless --replay <clip-set>` runs the full pipeline with <b>replay adapters</b> (recorded timestamps), a <b>virtual clock</b>, GPIO/LED stubs that assert the LED is never driven, no network and no hardware. Golden dataset = versioned clips (derived features and non-person NoIR/thermal arrays; volunteers' raw eye/voice never included) with `manifest.json` (SHA-256 per file, label, source, consent ID, license, split). Splits are subject-disjoint: <b>train</b>, <b>dev</b>, and a <b>frozen test</b> split whose manifest hash is recorded in the decision log at G0; the frozen split never changes (re-freeze needs a new decision and resets claims). Stored as an encrypted archive on local disk; git holds only manifests and code. Runs on Linux (box or laptop), Pi and Mac. <b>Gate.</b> E-23, E-25.
 
 ### M-10 macOS CI job producing the Android APK and macOS artifacts from one commit (spec-only)
 
@@ -406,18 +406,18 @@ IEC 62471 classifies lamps and LEDs; for 780–1400 nm IR, the key limits at the
 | cryptsetup/LUKS, `iw`, `rtl_power` | tools | GPL | Separate executables only |
 
 ```
-# asb-rig: standalone repo, Apache-2.0, standalone
+# O Iris: standalone repo, Apache-2.0, standalone
 LICENSE NOTICE README SECURITY.md
 docs/       spec  consent_form  biometric_release  legal_checklist  eye_safety_worksheet
 hardware/   pod_cad/  wiring.md  bom.csv
 schema/     sample.json score.json event.json vocabulary.json   (shared by Python and Kotlin)
-asb/adapters/  thermal_mlx90640 thermal_uvc camera_noir camera_eye ir_led ble_scan wifi_beacons
+oiris/adapters/  thermal_mlx90640 thermal_uvc camera_noir camera_eye ir_led ble_scan wifi_beacons
                mmwave_mr60 imu mic_ptt gps_i2c button_haptic sdr_probe   (+ replay_* and sim_*)
-asb/features/  glint thermal_roi pupil blink glint_code rppg voice_embed rf_stats rf_skew baseline
-asb/scores/    one module per score (value 0..1, confidence, health, evidence)
-asb/fusion/    stack calibrate report          asb/guard/     vocabulary privacy consent retention phrases
-asb/security/  keys noise_channel hashchain panic wipe          asb/store/  schema.sql db export sightings sweeps
-asb/           cli ui headless/ (replay, virtual clock, stubs)
+oiris/features/  glint thermal_roi pupil blink glint_code rppg voice_embed rf_stats rf_skew baseline
+oiris/scores/    one module per score (value 0..1, confidence, health, evidence)
+oiris/fusion/    stack calibrate report          oiris/guard/     vocabulary privacy consent retention phrases
+oiris/security/  keys noise_channel hashchain panic wipe          oiris/store/  schema.sql db export sightings sweeps
+oiris/           cli ui headless/ (replay, virtual clock, stubs)
 android/app/   Kotlin: adapters gate sighting map tts sweep fallback
 golden/        manifest.json README   (data lives in an encrypted archive, git-ignored)
 scripts/       build_all.sh verify_build.sh license_audit.sh run_experiment.py cal_thermal.py cal_align.py
@@ -525,7 +525,7 @@ Effort estimate: three weekends for Tier A v2, one more for Tier B, one for the 
 | E-20 | Voice output tiers | 50 events per tier; speech start latency; barge-in over a running Attention phrase; airplane mode | **Attention start ≤1.5 s p95; Confirmed barge-in cuts speech ≤300 ms p95; ≤1 Attention per 10 s; 100% of phrases from whitelist; 0 banned words; offline voice only (no network voice)** |
 | E-21 | Baselines and new-object alert | 3 rooms × 3 baseline passes; 12 planted objects and 12 unplanted control passes; anchors | **New powered emitter at an anchor flagged ≥90% within 2 min; false A10 ≤1 per room-pass on unchanged rooms; thermal blob (≥+5 °C, ≥4 px, ≤1.5 m) ≥80%; passive objects (cardboard, mirror) **report-only**** |
 | E-22 | Thermal grayscale and overlay | Fresh-install and UI tests; readout vs data | **Default is grayscale in 100% of fresh installs; toggle persists; legend and 'not a medical measurement' tag always shown; displayed value equals stored value within 0.1 °C** |
-| E-23 | Headless run and golden suite | `asb --headless --replay` on the golden dataset, Linux, no hardware, no network; 3 repeats | **0 failures; guard output byte-identical across repeats; float scores within 1e-6; LED stub asserts never driven; suite ≤2 min laptop, ≤10 min Pi 5; manifest verification 100%** |
+| E-23 | Headless run and golden suite | `oiris --headless --replay` on the golden dataset, Linux, no hardware, no network; 3 repeats | **0 failures; guard output byte-identical across repeats; float scores within 1e-6; LED stub asserts never driven; suite ≤2 min laptop, ≤10 min Pi 5; manifest verification 100%** |
 | E-24 | One-commit build | `build_all.sh` on a clean Mac; again on dirty tree; Linux APK build | **Refuses dirty tree; APK and macOS artifact carry identical commit hash, SHA-256 list recorded; APK installs and passes app-gate smoke test; macOS self-test runs headless; Linux APK reported (content-equivalence, not bitwise)** |
 | E-25 | Adapter contract | Contract suite for every real/replay/sim adapter; kill one adapter thread; unplug a USB device | **100% pass; others continue and the failed one is flagged; re-open ≤10 s; replay timestamps within 1 ms; queue drop counter reported** |
 | E-26 | Feedback loop | 20 simulated confirmed and 20 benign sightings; attempt to inject into frozen test | **All become quarantined candidates; promotion needs review; clips with people but no consent ID rejected 100%; frozen test manifest hash unchanged 100%; withdrawal bumps manifest and removes clip** |
@@ -651,7 +651,7 @@ the owner's instruction was to ask nothing and settle everything; every row belo
 
 | ID | Topic | Settled default and reason |
 |---|---|---|
-| D-02 | Repo and license | New repo `asb-rig`, Apache-2.0, standalone. |
+| D-02 | Repo and license | New repo `o-iris`, Apache-2.0, standalone. |
 | D-03 | IR policy | Exempt-group parts, ≤2 LEDs per bank (two banks), ≤100 mA, duty caps, no optics, series switch; subject ≥0.3 m (eye) / ≥0.5 m (glint). |
 | D-04 | Subjects | Household adults with a written release; no strangers, no children, private premises only. |
 | D-05 | RF scope | BLE adverts + AP beacons (incl. TSF) in managed mode; no monitor mode, cellular, data frames, or jamming. |
@@ -703,7 +703,7 @@ the owner's instruction was to ask nothing and settle everything; every row belo
 |---|---|---|
 | D-01 | <b>Purchase approval.</b> Tier A v2 ≈ $461; Tier B v2 +$401; props +$50–150; Phase 2 glasses +$399–449. | Nothing is bought. Recommend Tier A v2 first, Tier B only after G0. |
 | R-1 | the owner's phone model: StrongBox and Class 3 biometric support are unknown. | Software Keystore + device-credential fallback; record at B-22. |
-| R-2 | Will `asb-rig` be public or private? Public repos get free hosted macOS minutes; private ones cost $0.062/min. | Private; local build only. |
+| R-2 | Will `o-iris` be public or private? Public repos get free hosted macOS minutes; private ones cost $0.062/min. | Private; local build only. |
 | R-3 | IQ-level BLE/Wi-Fi fingerprinting would need a 2.4 GHz receive SDR (not budgeted, price unchecked). | Not planned. |
 | R-4 | Where the owner and volunteers live (which biometric/recording statutes apply). | Strictest rules everywhere: written release, all-party recording consent. |
 | R-5 | Optional user-owned wipe relay endpoint. | OFF. |

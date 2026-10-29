@@ -14,13 +14,13 @@ One process. One thread per sensor adapter (the **sensor bus**). An asyncio loop
 ## Ports (ports & adapters)
 | Port | Interface | Version | Registry key |
 |---|---|---|---|
-| sensor | `asb.adapters.base.SensorAdapter` (open/start/read/stop/close/health, `caps`, `license`) | 1.0 | `("sensor", id)` |
-| score | `asb.scores.base.ScoreModule` (`name`, `inputs`, `module_flag`, `update(window)->Score`) | 1.0 | `("score", name)` |
-| model | `asb.models.ModelPort` + C9 manifest; loaded into a `ModelSlot` | 1.0 | `("model", name)` |
-| tts | `asb.modules.voice.Tts` (`speak`, `stop`, `offline`) | 1.0 | `("tts", name)` |
-| store | `asb.store.db.DB` (migrations, sealed JSON) | 1.0 | `("store", name)` |
+| sensor | `oiris.adapters.base.SensorAdapter` (open/start/read/stop/close/health, `caps`, `license`) | 1.0 | `("sensor", id)` |
+| score | `oiris.scores.base.ScoreModule` (`name`, `inputs`, `module_flag`, `update(window)->Score`) | 1.0 | `("score", name)` |
+| model | `oiris.models.ModelPort` + C9 manifest; loaded into a `ModelSlot` | 1.0 | `("model", name)` |
+| tts | `oiris.modules.voice.Tts` (`speak`, `stop`, `offline`) | 1.0 | `("tts", name)` |
+| store | `oiris.store.db.DB` (migrations, sealed JSON) | 1.0 | `("store", name)` |
 
-`asb/registry.py` holds the ports; built-ins register in `asb/adapters/builtin.py` and `asb/scores/builtin.py`; third parties register through the `asb.plugins` entry-point group. A plugin with a different **major** port version or a disallowed license is rejected at registration. A plugin that throws while loading is logged and skipped.
+`oiris/registry.py` holds the ports; built-ins register in `oiris/adapters/builtin.py` and `oiris/scores/builtin.py`; third parties register through the `oiris.plugins` entry-point group. A plugin with a different **major** port version or a disallowed license is rejected at registration. A plugin that throws while loading is logged and skipped.
 
 ## Fault isolation
 | Failure | Containment | Test |
@@ -39,18 +39,18 @@ One process. One thread per sensor adapter (the **sensor bus**). An asyncio loop
 ## Contracts
 | ID | Contract | Where | Owner |
 |---|---|---|---|
-| C1 | Score: module, value [0,1], confidence [0,1], health, timestamps, version; no class field | `asb/schema.py`, `schema/score.json` | Core |
-| C2 | Sensor adapter + Sample | `asb/adapters/base.py`, `schema/sample.json` | Core |
-| C3 | Event: signature A1–A11, level fyi/attention/confirmed, benign causes; no class field | `asb/schema.py`, `schema/event.json` | Core |
-| C4 | Sighting log: encrypted body, GPS policy, hash-chain fields, verdict, retention | `asb/store/sightings.py`, migrations | Core |
-| C5 | Golden dataset manifest (format v2) | `asb/modules/golden.py` | Training |
-| C6 | Layout-zone map (glasses G*, phone P1–P5, dashboard D1–D6) | `docs/spec/ASB-Module-Map-v1.1.pdf`, used by `android/` and `asb/dashboard/` | Design |
+| C1 | Score: module, value [0,1], confidence [0,1], health, timestamps, version; no class field | `oiris/schema.py`, `schema/score.json` | Core |
+| C2 | Sensor adapter + Sample | `oiris/adapters/base.py`, `schema/sample.json` | Core |
+| C3 | Event: signature A1–A11, level fyi/attention/confirmed, benign causes; no class field | `oiris/schema.py`, `schema/event.json` | Core |
+| C4 | Sighting log: encrypted body, GPS policy, hash-chain fields, verdict, retention | `oiris/store/sightings.py`, migrations | Core |
+| C5 | Golden dataset manifest (format v2) | `oiris/modules/golden.py` | Training |
+| C6 | Layout-zone map (glasses G*, phone P1–P5, dashboard D1–D6) | `docs/spec/ASB-Module-Map-v1.1.pdf`, used by `android/` and `oiris/dashboard/` | Design |
 | C7 | Design tokens | to be produced by the Design workstream (see STATUS) | Design |
 | C8 | Versioning and change policy | `docs/UPGRADING.md` | Docs |
-| C9 | Model package manifest | `asb/models.py` (`REQUIRED` fields) | Training |
+| C9 | Model package manifest | `oiris/models.py` (`REQUIRED` fields) | Training |
 
 ## Signal families and signatures
-Families: optical, thermal, rf, vital, eye_liveness, voice. Signatures A1–A11 are defined in `asb/schema.py` with their benign causes. An alert (ATTENTION) needs ≥2 families; one family is FYI; CONFIRMED is set only by an operator.
+Families: optical, thermal, rf, vital, eye_liveness, voice. Signatures A1–A11 are defined in `oiris/schema.py` with their benign causes. An alert (ATTENTION) needs ≥2 families; one family is FYI; CONFIRMED is set only by an operator.
 
 ## Module map (spec M-01…M-15 → code)
 | Module | Code |

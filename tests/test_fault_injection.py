@@ -3,13 +3,13 @@ crashing/NaN score modules must never take down the process; fusion degrades."""
 import asyncio, math, threading, time
 import pytest
 
-from asb.adapters import sim
-from asb.adapters.base import AdapterBase, SimAdapter
-from asb.bus import SensorBus
-from asb.config import Config
-from asb.engine import Engine
-from asb.schema import Health, Score
-from asb.scores.base import safe_update
+from oiris.adapters import sim
+from oiris.adapters.base import AdapterBase, SimAdapter
+from oiris.bus import SensorBus
+from oiris.config import Config
+from oiris.engine import Engine
+from oiris.schema import Health, Score
+from oiris.scores.base import safe_update
 
 
 class Crasher(AdapterBase):
@@ -150,7 +150,7 @@ def test_engine_survives_everything_and_degrades():
 
 
 def test_fusion_suppressed_when_two_families_unhealthy():
-    from asb.fusion.stack import fuse
+    from oiris.fusion.stack import fuse
     r = fuse([Score("S_thermal", 0, 0, Health.FAILED), Score("S_rf", 0, 0, Health.FAILED),
               Score("S_glint", 0.9, 0.9), Score("S_radar", 0.9, 0.9)])
     assert r["suppressed"] and r["level"] is None and r["anomaly_index"] == 0.0
@@ -161,13 +161,13 @@ def test_event_handler_crash_does_not_stop_loop():
     for a in sim.make("camera_lens"):
         a.open({}); e.add_adapter(a)
     e.on_event = lambda ev: 1 / 0
-    from asb.headless import run_sync
+    from oiris.headless import run_sync
     out = run_sync(e, 3)
     assert len(out) == 3 and e.events
 
 
 def test_model_load_failure_falls_back(tmp_path):
-    from asb.fusion.stack import load_weights, FusionModel
+    from oiris.fusion.stack import load_weights, FusionModel
     good = FusionModel(version="last-good")
     p = tmp_path / "w.json"
     for content in ["{not json", '{"w":[1,2],"w_mask":[0],"b":0}', '{"w":[1,1,1,1,1,1],"w_mask":[0,0,0,0,0,0],"b":NaN}']:

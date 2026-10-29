@@ -3,12 +3,12 @@ satisfies the same port contract, so they can be swapped without touching core."
 import json
 import pytest
 
-from asb.adapters import drivers, sim
-from asb.adapters.base import ReplayAdapter, SensorAdapter
-from asb.bus import default_validator
-from asb.registry import default_registry, Registry, RegistryError
-from asb.schema import Health, Score
-from asb.scores import builtin as sb
+from oiris.adapters import drivers, sim
+from oiris.adapters.base import ReplayAdapter, SensorAdapter
+from oiris.bus import default_validator
+from oiris.registry import default_registry, Registry, RegistryError
+from oiris.schema import Health, Score
+from oiris.scores import builtin as sb
 
 REQUIRED_ATTRS = ("id", "bus", "caps", "license")
 
@@ -47,7 +47,7 @@ def test_sim_adapters_contract(a):
 
 
 def test_replay_is_indistinguishable(tmp_path):
-    from asb.headless import record_clip, run_replay, run_scenario
+    from oiris.headless import record_clip, run_replay, run_scenario
     record_clip("camera_lens", tmp_path, steps=2)
     caps = json.loads((tmp_path / "caps.json").read_text())
     for aid, c in caps.items():
@@ -101,14 +101,14 @@ def test_broken_entry_point_does_not_stop_startup(monkeypatch):
     class EPS:
         def select(self, group):
             return [EP()]
-    import asb.registry as reg
+    import oiris.registry as reg
     monkeypatch.setattr(reg.metadata, "entry_points", lambda: EPS())
     assert Registry().load_entry_points() == []
 
 
 def test_core_never_imports_concrete_drivers():
     import ast, pathlib
-    core = ["asb/engine.py", "asb/bus.py", "asb/fusion/stack.py"]
+    core = ["oiris/engine.py", "oiris/bus.py", "oiris/fusion/stack.py"]
     for f in core:
         tree = ast.parse(pathlib.Path(f).read_text())
         for n in ast.walk(tree):
@@ -117,7 +117,7 @@ def test_core_never_imports_concrete_drivers():
 
 
 def test_schema_files_match_code():
-    from asb.schema import SIGNATURES
+    from oiris.schema import SIGNATURES
     v = json.load(open("schema/vocabulary.json"))
     assert set(v["signatures"]) == set(SIGNATURES)
     sc = json.load(open("schema/score.json"))

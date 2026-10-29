@@ -10,7 +10,7 @@ FYI = haptic; Attention = whitelisted phrase, 1 per 10 s; Confirmed = barge-in, 
 
 ## Where it is enforced
 
-asb/modules/voice.py
+oiris/modules/voice.py
 
 ## Changing it
 

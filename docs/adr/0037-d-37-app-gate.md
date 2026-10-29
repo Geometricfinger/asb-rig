@@ -10,7 +10,7 @@ BIOMETRIC_STRONG + device credential; crypto-bound; 60 s lock; FLAG_SECURE.
 
 ## Where it is enforced
 
-android Gate.kt, KeyVault.kt; asb/modules/appgate.py
+android Gate.kt, KeyVault.kt; oiris/modules/appgate.py
 
 ## Changing it
 

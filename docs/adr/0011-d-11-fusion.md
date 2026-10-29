@@ -10,7 +10,7 @@ Stacked logistic regression over ≤6 family values; LOSO; human FPR ≤5%.
 
 ## Where it is enforced
 
-asb/fusion/stack.py
+oiris/fusion/stack.py
 
 ## Changing it
 

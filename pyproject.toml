@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "asb-rig"
+name = "o-iris"
 version = "0.1.0"
 description = "Anomaly Signature Bench: passive multi-sensor research rig that reports anomaly signatures, never identities"
 readme = "README.md"
@@ -16,13 +16,14 @@ hw = ["bleak>=0.22", "pyserial>=3.5", "opencv-python-headless>=4.9", "adafruit-c
 dev = ["pytest>=8", "hypothesis>=6", "ruff>=0.6", "mypy>=1.10", "pip-licenses>=5"]
 
 [project.scripts]
-asb = "asb.cli:main"
+oiris = "oiris.cli:main"
+asb = "oiris.cli:main"  # backward-compatible alias
 
-[project.entry-points."asb.plugins"]
-# third-party packages add:  myplugin = "my_pkg.asb_plugin:register"
+[project.entry-points."oiris.plugins"]
+# third-party packages add:  myplugin = "my_pkg.oiris_plugin:register"
 
 [tool.setuptools.packages.find]
-include = ["asb*"]
+include = ["oiris*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

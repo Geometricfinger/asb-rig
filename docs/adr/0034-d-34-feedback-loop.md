@@ -10,7 +10,7 @@ Quarantine → review → growth set; frozen test never changes.
 
 ## Where it is enforced
 
-asb/modules/golden.FeedbackLoop
+oiris/modules/golden.FeedbackLoop
 
 ## Changing it
 
