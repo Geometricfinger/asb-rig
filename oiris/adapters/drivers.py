@@ -61,7 +61,9 @@ class UvcThermalAdapter(AdapterBase):
         return self._sample({"frame_c": raw.astype(float) / 100.0 - 273.15})   # centi-Kelvin (TLinear)
 
     def close(self) -> None:
-        getattr(self, "_cap", None) and self._cap.release()
+        cap = getattr(self, "_cap", None)
+        if cap:
+            cap.release()
 
 
 class PiCameraNirAdapter(AdapterBase):
