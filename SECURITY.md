@@ -6,6 +6,8 @@ Please report vulnerabilities privately via GitHub's **"Report a vulnerability"*
 ## Scope
 The security module (M-04) protects **the owner's own data on the owner's own devices**: AES-256-GCM at rest (LUKS2 on the Pi, SQLCipher on the phone), a Noise_XX_25519_ChaChaPoly_BLAKE2s link with rekey every 1,000 messages or 10 minutes, an HMAC-SHA256 hash-chained log with Ed25519 anchors, crypto-erase on panic / 10 failed unlocks / signed wipe from the paired phone.
 
+Pi disk encryption: `sudo scripts/pi_luks2_setup.sh --device /dev/sdX1 --dry-run` prints the plan; drop `--dry-run` to apply (erases the device after a typed confirmation). It is idempotent and never stores the passphrase.
+
 ## Known limits
 - Python cannot guarantee constant-time behaviour of surrounding code; secret comparisons use `hmac.compare_digest` and a lint test bans `==` on secret-named variables.
 - Overwriting flash is unreliable; erasure relies on destroying keys (crypto-erase).

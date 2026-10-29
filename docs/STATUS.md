@@ -7,7 +7,7 @@ Version 0.1.0. "Real" = implemented and unit-tested headless. "Untested on hardw
 | Sensor bus, registry, config, flags, fault isolation | **Real**, tested (incl. fault injection) |
 | Fusion (families, LR stack, mask, evidence rule, suppression, training, AUC) | **Real**; default weights are a hand-set prior (no trained weights yet) |
 | Guards (vocabulary, consent, privacy, retention, phrases, passive radio) | **Real**, tested |
-| Security (AES-GCM, keystore + scrypt, Noise_XX + rekey, hash chain + anchors, panic, wipe) | **Real** in Python, tested. LUKS2 setup on the Pi is an operator step (not scripted yet) |
+| Security (AES-GCM, keystore + scrypt, Noise_XX + rekey, hash chain + anchors, panic, wipe) | **Real** in Python, tested. LUKS2 data-partition setup is scripted (`scripts/pi_luks2_setup.sh`: idempotent, `--dry-run`, typed confirmation; tested in dry-run with faked tools). **Never run on a real Pi yet** |
 | Sighting log, sweep timeline, migrations | **Real**, tested |
 | Golden manifest, freeze, withdrawal, feedback loop, format migration | **Real**, tested. **No golden data exists yet**; expectations come from simulated scenarios |
 | Headless mode, CLI, replay/record | **Real**, tested |
