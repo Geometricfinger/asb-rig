@@ -19,3 +19,7 @@ android/local.properties
 *.keystore
 *.jks
 PROGRESS.md
+
+# local-only (not published)
+training-library/
+artifacts/
