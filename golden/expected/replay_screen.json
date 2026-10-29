@@ -1,0 +1,254 @@
+[
+ {
+  "anomaly_index": 0.175568,
+  "families_active": [
+   "vital"
+  ],
+  "families_missing": [
+   "eye_liveness",
+   "voice"
+  ],
+  "families_unhealthy": [],
+  "level": "fyi",
+  "model_version": "prior-0",
+  "scores": [
+   {
+    "confidence": 0.6,
+    "evidence": {
+     "candidates": 0
+    },
+    "module": "S_glint",
+    "schema_version": "1.0.0",
+    "value": 0.0
+   },
+   {
+    "confidence": 0.3,
+    "evidence": {},
+    "module": "S_motion",
+    "schema_version": "1.0.0",
+    "value": 0.1
+   },
+   {
+    "confidence": 0.4,
+    "evidence": {},
+    "module": "S_newobj",
+    "schema_version": "1.0.0",
+    "value": 0.0
+   },
+   {
+    "confidence": 0.7,
+    "evidence": {},
+    "module": "S_nir_emit",
+    "schema_version": "1.0.0",
+    "value": 0.0
+   },
+   {
+    "confidence": 0.6,
+    "evidence": {},
+    "module": "S_radar",
+    "schema_version": "1.0.0",
+    "value": 0.833333
+   },
+   {
+    "confidence": 0.6,
+    "evidence": {
+     "near": 0
+    },
+    "module": "S_rf",
+    "schema_version": "1.0.0",
+    "value": 0.0
+   },
+   {
+    "confidence": 0.8,
+    "evidence": {
+     "drifted": 0
+    },
+    "module": "S_rf_drift",
+    "schema_version": "1.0.0",
+    "value": 0.0
+   },
+   {
+    "confidence": 0.3,
+    "evidence": {
+     "hot_px": 0,
+     "max_c": 22.352642
+    },
+    "module": "S_thermal",
+    "schema_version": "1.0.0",
+    "value": 0.0
+   }
+  ],
+  "signatures": [
+   "A5"
+  ],
+  "suppressed": false
+ },
+ {
+  "anomaly_index": 0.175568,
+  "families_active": [
+   "vital"
+  ],
+  "families_missing": [
+   "eye_liveness",
+   "voice"
+  ],
+  "families_unhealthy": [],
+  "level": "fyi",
+  "model_version": "prior-0",
+  "scores": [
+   {
+    "confidence": 0.6,
+    "evidence": {
+     "candidates": 0
+    },
+    "module": "S_glint",
+    "schema_version": "1.0.0",
+    "value": 0.0
+   },
+   {
+    "confidence": 0.3,
+    "evidence": {},
+    "module": "S_motion",
+    "schema_version": "1.0.0",
+    "value": 0.1
+   },
+   {
+    "confidence": 0.4,
+    "evidence": {},
+    "module": "S_newobj",
+    "schema_version": "1.0.0",
+    "value": 0.0
+   },
+   {
+    "confidence": 0.7,
+    "evidence": {},
+    "module": "S_nir_emit",
+    "schema_version": "1.0.0",
+    "value": 0.0
+   },
+   {
+    "confidence": 0.6,
+    "evidence": {},
+    "module": "S_radar",
+    "schema_version": "1.0.0",
+    "value": 0.833333
+   },
+   {
+    "confidence": 0.6,
+    "evidence": {
+     "near": 0
+    },
+    "module": "S_rf",
+    "schema_version": "1.0.0",
+    "value": 0.0
+   },
+   {
+    "confidence": 0.8,
+    "evidence": {
+     "drifted": 0
+    },
+    "module": "S_rf_drift",
+    "schema_version": "1.0.0",
+    "value": 0.0
+   },
+   {
+    "confidence": 0.3,
+    "evidence": {
+     "hot_px": 0,
+     "max_c": 22.167715
+    },
+    "module": "S_thermal",
+    "schema_version": "1.0.0",
+    "value": 0.0
+   }
+  ],
+  "signatures": [
+   "A5"
+  ],
+  "suppressed": false
+ },
+ {
+  "anomaly_index": 0.175568,
+  "families_active": [
+   "vital"
+  ],
+  "families_missing": [
+   "eye_liveness",
+   "voice"
+  ],
+  "families_unhealthy": [],
+  "level": "fyi",
+  "model_version": "prior-0",
+  "scores": [
+   {
+    "confidence": 0.6,
+    "evidence": {
+     "candidates": 0
+    },
+    "module": "S_glint",
+    "schema_version": "1.0.0",
+    "value": 0.0
+   },
+   {
+    "confidence": 0.3,
+    "evidence": {},
+    "module": "S_motion",
+    "schema_version": "1.0.0",
+    "value": 0.1
+   },
+   {
+    "confidence": 0.4,
+    "evidence": {},
+    "module": "S_newobj",
+    "schema_version": "1.0.0",
+    "value": 0.0
+   },
+   {
+    "confidence": 0.7,
+    "evidence": {},
+    "module": "S_nir_emit",
+    "schema_version": "1.0.0",
+    "value": 0.0
+   },
+   {
+    "confidence": 0.6,
+    "evidence": {},
+    "module": "S_radar",
+    "schema_version": "1.0.0",
+    "value": 0.833333
+   },
+   {
+    "confidence": 0.6,
+    "evidence": {
+     "near": 0
+    },
+    "module": "S_rf",
+    "schema_version": "1.0.0",
+    "value": 0.0
+   },
+   {
+    "confidence": 0.8,
+    "evidence": {
+     "drifted": 0
+    },
+    "module": "S_rf_drift",
+    "schema_version": "1.0.0",
+    "value": 0.0
+   },
+   {
+    "confidence": 0.3,
+    "evidence": {
+     "hot_px": 0,
+     "max_c": 21.828279
+    },
+    "module": "S_thermal",
+    "schema_version": "1.0.0",
+    "value": 0.0
+   }
+  ],
+  "signatures": [
+   "A5"
+  ],
+  "suppressed": false
+ }
+]

@@ -1,0 +1,11 @@
+# coordinate | license (checked by scripts/license_check.py; every Gradle dep must be listed)
+androidx.core:core-ktx | Apache-2.0
+androidx.fragment:fragment-ktx | Apache-2.0
+androidx.biometric:biometric | Apache-2.0
+androidx.camera:camera-core | Apache-2.0
+androidx.camera:camera-camera2 | Apache-2.0
+androidx.camera:camera-lifecycle | Apache-2.0
+net.zetetic:sqlcipher-android | BSD-3-Clause (SQLCipher Community; notice shipped in NOTICE)
+androidx.sqlite:sqlite | Apache-2.0
+org.mapsforge:mapsforge-map-android | LGPL-3.0-with-exception (Mapsforge waives LGPL 4(d)-(e) for apps)
+org.mapsforge:mapsforge-themes | LGPL-3.0-with-exception

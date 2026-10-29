@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "adapter_id": {
+      "type": "string"
+    },
+    "data": {},
+    "quality": {
+      "maximum": 1,
+      "minimum": 0,
+      "type": "number"
+    },
+    "replay": {
+      "type": "boolean"
+    },
+    "seq": {
+      "type": "integer"
+    },
+    "t_mono_ns": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "t_wall": {
+      "type": "number"
+    },
+    "units": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "adapter_id",
+    "t_mono_ns",
+    "t_wall",
+    "seq",
+    "units",
+    "quality",
+    "data"
+  ],
+  "title": "C2 Sample v1.0.0",
+  "type": "object"
+}

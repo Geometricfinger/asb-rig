@@ -1,0 +1,6 @@
+- Spec module(s): M-
+- Port touched (sensor/score/model/tts/store) and port version:
+- [ ] Tests added (contract + fault-injection where relevant), `pytest` green
+- [ ] No banned vocabulary; no class/identity fields
+- [ ] New deps listed in THIRD_PARTY.md and pass `scripts/license_check.py`
+- [ ] CHANGELOG.md updated; ADR added if a settled default changes

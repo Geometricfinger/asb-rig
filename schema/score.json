@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "confidence": {
+      "maximum": 1,
+      "minimum": 0,
+      "type": "number"
+    },
+    "evidence": {
+      "type": "object"
+    },
+    "health": {
+      "enum": [
+        "ok",
+        "degraded",
+        "failed"
+      ]
+    },
+    "module": {
+      "pattern": "^S_[a-z_]+$",
+      "type": "string"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "t_mono_ns": {
+      "type": "integer"
+    },
+    "value": {
+      "maximum": 1,
+      "minimum": 0,
+      "type": "number"
+    }
+  },
+  "required": [
+    "module",
+    "value",
+    "confidence",
+    "health",
+    "t_mono_ns",
+    "schema_version"
+  ],
+  "title": "C1 Score v1.0.0",
+  "type": "object"
+}

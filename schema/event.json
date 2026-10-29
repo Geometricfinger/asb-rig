@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "benign_causes": {
+      "type": "array"
+    },
+    "contributing": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "description": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "families": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "health_snapshot": {
+      "type": "object"
+    },
+    "level": {
+      "enum": [
+        "fyi",
+        "attention",
+        "confirmed"
+      ]
+    },
+    "location_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "score": {
+      "maximum": 1,
+      "minimum": 0,
+      "type": "number"
+    },
+    "signature": {
+      "enum": [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "A7",
+        "A8",
+        "A9",
+        "A10",
+        "A11"
+      ]
+    },
+    "t_wall": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "event_id",
+    "signature",
+    "level",
+    "score",
+    "contributing",
+    "families",
+    "benign_causes"
+  ],
+  "title": "C3 Event v1.0.0",
+  "type": "object"
+}

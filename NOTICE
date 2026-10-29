@@ -1,0 +1,9 @@
+asb-rig (Anomaly Signature Bench)
+Copyright 2026 asb-rig contributors
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This product's Android build bundles SQLCipher Community Edition (BSD-3-Clause,
+Copyright (c) Zetetic LLC) and Mapsforge (LGPL-3.0 with the Mapsforge exception).
+Map data, when used, is © OpenStreetMap contributors, available under the ODbL.
+See THIRD_PARTY.md for the full list.

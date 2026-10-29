@@ -1,0 +1,181 @@
+{
+  "banned_patterns": [
+    "robots?",
+    "androids?",
+    "fake",
+    "not\\s+human",
+    "non-?human",
+    "impostors?",
+    "synthetic\\s+person",
+    "not\\s+alive",
+    "dead",
+    "replicas?",
+    "humanoids?",
+    "cyborgs?",
+    "is\\s+human",
+    "real\\s+person",
+    "machine\\s+person",
+    "bots?"
+  ],
+  "benign_causes": {
+    "A1": [
+      "phones",
+      "webcams",
+      "eyeglasses",
+      "watches",
+      "jewelry",
+      "human eyes"
+    ],
+    "A10": [
+      "guests' devices",
+      "moved furniture",
+      "new appliance"
+    ],
+    "A11": [
+      "photo or video on a screen",
+      "mask on a stand",
+      "mannequin",
+      "subject outside sensor range"
+    ],
+    "A2": [
+      "security cameras",
+      "remotes",
+      "face-unlock emitters",
+      "night-vision rings"
+    ],
+    "A3": [
+      "cold hands",
+      "coats",
+      "hot drinks",
+      "fever",
+      "heaters",
+      "sun-warmed objects"
+    ],
+    "A4": [
+      "phones",
+      "watches",
+      "earbuds",
+      "medical devices",
+      "beacons"
+    ],
+    "A5": [
+      "subject moving",
+      "wet clothing",
+      "radar blocked"
+    ],
+    "A6": [
+      "ordinary movement",
+      "children"
+    ],
+    "A7": [
+      "sunglasses",
+      "contact lenses",
+      "eye drops",
+      "fatigue",
+      "medication",
+      "glare",
+      "prosthetic eye"
+    ],
+    "A8": [
+      "poor mic placement",
+      "noise",
+      "speakerphone",
+      "a cold",
+      "recording device in use"
+    ],
+    "A9": [
+      "firmware update",
+      "battery",
+      "temperature",
+      "relocated device"
+    ]
+  },
+  "forbidden_fields": [
+    "class",
+    "identity",
+    "is_human",
+    "is_robot",
+    "label",
+    "person_type",
+    "species",
+    "verdict_class"
+  ],
+  "max_words": 8,
+  "phrase_templates": {
+    "confirm": "Confirmed by operator: {what}",
+    "eye": "Eye signals unusual, check lighting",
+    "glint": "Candidate camera lens {direction}, {distance}",
+    "health": "Sensor {sensor} offline",
+    "ir_emitter": "Infrared emitter {direction}",
+    "liveness": "Expected signals not observed: {signals}",
+    "new_object": "New object at {anchor}",
+    "panic": "Locked",
+    "rf_drift": "Known device changed",
+    "rf_near": "Radio device nearby",
+    "thermal": "Unusual heat pattern {direction}",
+    "voice": "Voice signals not observed"
+  },
+  "signatures": {
+    "A1": "Lens-glint candidate",
+    "A10": "New fixed emitter or object at a known anchor",
+    "A11": "Expected liveness indicators absent across two or more families",
+    "A2": "Active near-IR emitter",
+    "A3": "Thermal pattern atypical vs baseline",
+    "A4": "Radio emitter near",
+    "A5": "Expected vital motion absent at close range",
+    "A6": "Motion pattern irregular",
+    "A7": "Eye-dynamics atypical",
+    "A8": "Voice-liveness indicators not observed",
+    "A9": "Known emitter changed vs its baseline"
+  },
+  "slot_values": {
+    "anchor": [
+      "anchor 1",
+      "anchor 2",
+      "anchor 3",
+      "anchor 4",
+      "anchor 5",
+      "anchor 6"
+    ],
+    "direction": [
+      "above",
+      "ahead",
+      "at left",
+      "at right",
+      "behind",
+      "below"
+    ],
+    "distance": [
+      "far",
+      "half a metre",
+      "one metre",
+      "three metres",
+      "two metres"
+    ],
+    "sensor": [
+      "GPS",
+      "camera",
+      "eye camera",
+      "microphone",
+      "radar",
+      "radio",
+      "thermal"
+    ],
+    "signals": [
+      "blink",
+      "blink, breathing",
+      "breathing",
+      "pulse",
+      "pulse, blink",
+      "pulse, breathing"
+    ],
+    "what": [
+      "camera lens",
+      "heat source",
+      "infrared emitter",
+      "new object",
+      "radio device"
+    ]
+  },
+  "version": "1.0.0"
+}

@@ -1,0 +1,19 @@
+name: Feature / new adapter or model
+description: Propose a sensor adapter, score module, model package or UI piece
+labels: [enhancement]
+body:
+  - type: textarea
+    id: what
+    attributes: {label: Proposal, description: "Which port (sensor/score/model/tts/store)? Which spec module (M-xx)? License of every dependency?"}
+    validations: {required: true}
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Guardrails
+      options:
+        - label: Output stays an anomaly signature (no person classification wording)
+          required: true
+        - label: Passive-only radio (no transmit, jamming, deauth or monitor mode)
+          required: true
+        - label: All dependencies are MIT/BSD/Apache/ISC/PSF/MPL
+          required: true

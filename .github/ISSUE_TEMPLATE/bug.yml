@@ -1,0 +1,11 @@
+name: Bug report
+description: Something is broken
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes: {label: What happened, description: "Include `asb version`, OS, adapters in use. Do NOT attach recordings of people, audio, or location data."}
+    validations: {required: true}
+  - type: textarea
+    id: repro
+    attributes: {label: Steps to reproduce (headless scenario or replay clip preferred)}
