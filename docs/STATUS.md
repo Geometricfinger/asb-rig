@@ -24,4 +24,4 @@ Version 0.1.0. "Real" = implemented and unit-tested headless. "Untested on hardw
 | Glasses display (G zones) | **Real renderer in simulation** (`oiris/ui/glasses.py`, SVG, G1–G6, tested; `oiris glasses-sim`). No glasses hardware: real-display validation is Phase 2 after gate G1 |
 | Design tokens (C7) | **v0.1 DEFAULT** (`oiris/ui/design_tokens.json`, rules enforced by `tokens.validate`, ADR-0052); Design review may refine |
 | M-16 face matching (optional, off by default) | **Real** core, tested headless with a test-only synthetic backend: opt-in, enrollment (unlimited people), matching, research counts, review log, verified wipe, fault isolation. Real OpenCV Zoo backend: weights downloaded on request, **never run on a real face in tests**. Guided capture UI: CLI only (Android/glasses screens not built) |
-| macOS artifact | Wheel + self-test tarball, unsigned; no `.app` bundle yet |
+| macOS artifact | Wheel + self-test tarball + **unsigned `O Iris.app`** zip (offline wheels, launches the local dashboard; `scripts/make_macos_app.py`, structure tested). Signing/notarization needs a paid Apple Developer ID: steps in docs/MACOS.md, **not done** |

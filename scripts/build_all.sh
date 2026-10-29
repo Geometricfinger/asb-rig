@@ -20,15 +20,21 @@ cp android/app/build/outputs/apk/release/app-release-unsigned.apk "$OUT/o-iris-$
 python3 -m pip wheel --no-deps -w "$OUT" . >/dev/null
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 python3 -m oiris.cli selftest --scenario camera_lens --steps 3 --expect golden/expected/camera_lens.json
+if [[ "$OS" == "darwin" ]]; then
+  # unsigned .app bundle (offline wheels inside); zipped with ditto to keep bundle metadata
+  python3 scripts/make_macos_app.py --wheel "$(ls "$OUT"/o_iris-*.whl)" --out "$OUT" --commit "$COMMIT" --bundle-deps
+  ditto -c -k --keepParent "$OUT/O Iris.app" "$OUT/o-iris-$COMMIT-macos-app-unsigned.zip"
+  rm -rf "$OUT/O Iris.app"
+fi
 tar -czf "$OUT/o-iris-$COMMIT-$OS.tar.gz" -C "$OUT" "$(cd "$OUT" && ls o_iris-*.whl)" -C "$PWD" README.md LICENSE NOTICE THIRD_PARTY.md
 
 # 3) Manifest
 python3 - "$OUT" "$COMMIT" <<'PY'
 import hashlib, json, pathlib, platform, subprocess, sys
 out, commit = pathlib.Path(sys.argv[1]), sys.argv[2]
-arts = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(out.iterdir()) if p.suffix in (".apk", ".gz", ".whl")}
+arts = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(out.iterdir()) if p.suffix in (".apk", ".gz", ".whl", ".zip")}
 info = {"commit": commit, "host": platform.platform(), "python": platform.python_version(), "artifacts": arts}
-assert all(commit in n for n in arts if n.endswith((".apk", ".gz"))), "artifact commit mismatch"
+assert all(commit in n for n in arts if n.endswith((".apk", ".gz", ".zip"))), "artifact commit mismatch"
 (out / "BUILD_INFO.json").write_text(json.dumps(info, indent=2))
 print(json.dumps(info, indent=2))
 PY

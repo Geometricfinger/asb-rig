@@ -10,12 +10,15 @@ Policy (R-05): allowed MIT, BSD-2/3, Apache-2.0, ISC, PSF, MPL-2.0; LGPL only wi
 | PyNaCl (libsodium) | Apache-2.0 (libsodium ISC) | Ed25519 anchors |
 | noiseprotocol | MIT | Noise_XX channel |
 
+## macOS app bundle (redistributed wheels, CI artifact only)
+`O Iris.app` (`scripts/make_macos_app.py`) bundles the binary wheels of the required runtime above plus their dependencies: cffi (MIT), pycparser (BSD-3-Clause). numpy wheels may bundle OpenBLAS (BSD-3-Clause) and libgfortran/libquadmath (GPL-3.0 **with GCC Runtime Library Exception**, permits redistribution in any program); cryptography wheels bundle OpenSSL (Apache-2.0); PyNaCl bundles libsodium (ISC). Licence files travel inside each wheel's `.dist-info`.
+
 ## Python optional (`pip install .[hw]`)
 | Package | License | Use |
 |---|---|---|
 | bleak | MIT | passive BLE scanning |
 | pyserial | BSD-3-Clause | GPS, mmWave UART |
-| opencv-python-headless | Apache-2.0 (OpenCV); wheel bundles FFmpeg under LGPL as a shared library | UVC thermal; Haar cascade file license **unverified** |
+| opencv-python-headless | Apache-2.0 (OpenCV); wheel bundles FFmpeg under LGPL as a shared library | UVC thermal. Haar cascade files are **not used** (eye ROI is numpy dark-pupil + glint, ADR-0051) |
 | adafruit-circuitpython-mlx90640 | MIT | MLX90640 thermal |
 | gpiozero | BSD-3-Clause | IR LED gate |
 | picamera2 | BSD-2-Clause | Pi NoIR camera (Raspberry Pi OS package) |

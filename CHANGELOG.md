@@ -4,6 +4,7 @@ All notable changes. Format: Keep a Changelog; versioning: SemVer. Contracts C1�
 
 ## [Unreleased]
 ### Added
+- Unsigned macOS `O Iris.app` bundle in the CI artifact (`scripts/make_macos_app.py`, offline bundled wheels for Python 3.11–3.13); signing steps in docs/MACOS.md. Tests: `tests/test_macos_app.py`.
 - Synthetic seed golden set `golden/synthetic/` (5 simulator clips, frozen manifest, expectations) + `scripts/make_synthetic_golden.py` (`--check` in CI); real-data procedure in golden/README.md. Tests: `tests/test_synthetic_golden.py`.
 - C7 design tokens v0.1 + validator (`oiris/ui/tokens.py`) and simulated glasses display G1–G6 (`oiris/ui/glasses.py`, `oiris glasses-sim`); ADR-0052. Tests: `tests/test_ui_glasses.py`.
 - `scripts/pi_luks2_setup.sh`: LUKS2 (argon2id, aes-xts-512) data partition for the Pi, idempotent, `--dry-run`, noauto crypttab/fstab (passphrase never stored). Tests: `tests/test_luks_script.py`.
