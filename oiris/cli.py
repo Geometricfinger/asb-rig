@@ -2,6 +2,7 @@
   oiris --headless --scenario camera_lens --steps 3
   oiris --headless --replay golden/clips/camera_lens
   oiris check-phrases | license-audit | selftest | dashboard
+  oiris glasses-sim --scenario camera_lens --out g.svg   (simulated glasses display)
   oiris face-match status|enable|fetch-models|enroll|review|delete-entry|delete-person|disable  (M-16, opt-in)
 """
 from __future__ import annotations
@@ -15,7 +16,7 @@ from .config import Config, ConfigError
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="oiris", description="Anomaly Signature Bench (research tool; no identity output)")
     p.add_argument("command", nargs="?", default="run",
-                   choices=["run", "selftest", "check-phrases", "dashboard", "record", "version", "face-match"])
+                   choices=["run", "selftest", "check-phrases", "dashboard", "record", "version", "face-match", "glasses-sim"])
     p.add_argument("sub", nargs="?", help="face-match subcommand")
     p.add_argument("--mode", action="append", choices=["personal", "research"], help="face-match enable: mode(s)")
     p.add_argument("--jurisdiction", help="face-match enable: jurisdiction profile (unknown -> strictest)")
@@ -46,6 +47,11 @@ def main(argv: list[str] | None = None) -> int:
     if a.command == "record":
         from .headless import record_clip
         record_clip(a.scenario, a.out or Path(f"clip_{a.scenario}"), a.steps); return 0
+    if a.command == "glasses-sim":
+        from .headless import run_scenario
+        from .ui.glasses import render, state_from_result
+        svg = render(state_from_result(run_scenario(a.scenario, a.steps, config=cfg)[-1]))
+        (a.out.write_text(svg, encoding="utf-8") if a.out else print(svg)); return 0
     if a.command == "dashboard":
         from .dashboard.server import serve
         face = None

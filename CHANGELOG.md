@@ -4,6 +4,7 @@ All notable changes. Format: Keep a Changelog; versioning: SemVer. Contracts C1â
 
 ## [Unreleased]
 ### Added
+- C7 design tokens v0.1 + validator (`oiris/ui/tokens.py`) and simulated glasses display G1â€“G6 (`oiris/ui/glasses.py`, `oiris glasses-sim`); ADR-0052. Tests: `tests/test_ui_glasses.py`.
 - `scripts/pi_luks2_setup.sh`: LUKS2 (argon2id, aes-xts-512) data partition for the Pi, idempotent, `--dry-run`, noauto crypttab/fstab (passphrase never stored). Tests: `tests/test_luks_script.py`.
 - Live eye ROI (M-01): `oiris/features/eye_roi.py` (dark-pupil + glint, or landmarks), `EyeTracker`, `NirEyeAdapter` (`camera_noir_eye`); ADR-0051. Tests: `tests/test_eye_roi.py`.
 - Dashboard M-16 review page `/face` (`oiris/dashboard/face.py`): status, browse possible matches, delete entry, delete person (verified), disable+wipe (typed WIPE, verified), enrollment guide with angle checklist; per-process form token, `form-action 'self'` CSP; `oiris dashboard` wires M-16 only when on and opted in. Tests: `tests/test_dashboard.py`.

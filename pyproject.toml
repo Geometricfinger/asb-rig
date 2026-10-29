@@ -25,6 +25,9 @@ asb = "oiris.cli:main"  # backward-compatible alias
 [tool.setuptools.packages.find]
 include = ["oiris*"]
 
+[tool.setuptools.package-data]
+"oiris.ui" = ["design_tokens.json"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"

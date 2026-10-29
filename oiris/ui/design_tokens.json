@@ -1,0 +1,39 @@
+{
+  "contract": "C7",
+  "version": "0.1.0",
+  "status": "DEFAULT proposal implementing Module Map v1.1 section 6.1; Design review pending; numeric glasses limits to be validated on the real display (Phase 2)",
+  "color": {
+    "bg": "#000000",
+    "surface": "#121212",
+    "text": "#E6E6E6",
+    "text_muted": "#A0A0A0",
+    "health_ok": "#9E9E9E",
+    "health_degraded": "#F0E442",
+    "health_down": "#FFFFFF",
+    "alert": {"low": "#56B4E9", "medium": "#E69F00", "confirmed": "#FF8A5B"}
+  },
+  "alert_levels": {
+    "low": {"word": "Low signal", "shape": "circle", "tone": "single soft tone", "haptic": "one short pulse"},
+    "medium": {"word": "Medium signal", "shape": "triangle", "tone": "two tones", "haptic": "two short pulses"},
+    "confirmed": {"word": "Confirmed signal", "shape": "diamond", "tone": "three tones, operator confirms", "haptic": "one long pulse"}
+  },
+  "type": {
+    "font_family": "sans-serif",
+    "font_note": "Any open-licensed sans with tabular figures; none is bundled (licence check by Docs before bundling)",
+    "tabular_figures": true,
+    "scale_px": [12, 14, 16, 20, 24, 32],
+    "phone_body": 16,
+    "glasses_body": 20
+  },
+  "space_px": [4, 8, 12, 16, 24, 32],
+  "motion": {"max_flashes_per_s": 0, "transition_ms": 150, "respect_reduced_motion": true},
+  "touch_target_dp": 48,
+  "glasses": {
+    "canvas": [640, 400],
+    "default_brightness": 0.35,
+    "max_words_alert_line": 6,
+    "centre_clear_fraction": 0.4,
+    "thermal_default": "grayscale",
+    "thermal_window": [440, 230, 180, 135]
+  }
+}

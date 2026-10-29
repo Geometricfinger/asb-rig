@@ -45,7 +45,7 @@ One process. One thread per sensor adapter (the **sensor bus**). An asyncio loop
 | C4 | Sighting log: encrypted body, GPS policy, hash-chain fields, verdict, retention | `oiris/store/sightings.py`, migrations | Core |
 | C5 | Golden dataset manifest (format v2) | `oiris/modules/golden.py` | Training |
 | C6 | Layout-zone map (glasses G*, phone P1–P5, dashboard D1–D6) | `docs/spec/ASB-Module-Map-v1.1.pdf`, used by `android/` and `oiris/dashboard/` | Design |
-| C7 | Design tokens | to be produced by the Design workstream (see STATUS) | Design |
+| C7 | Design tokens | `oiris/ui/design_tokens.json` v0.1 (DEFAULT, validated by `oiris/ui/tokens.py`; ADR-0052) | Design |
 | C8 | Versioning and change policy | `docs/UPGRADING.md` | Docs |
 | C9 | Model package manifest | `oiris/models.py` (`REQUIRED` fields) | Training |
 
