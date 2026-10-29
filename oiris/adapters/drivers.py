@@ -95,6 +95,44 @@ class PiCameraNirAdapter(AdapterBase):
         getattr(self, "_cam", None) and self._cam.stop()
 
 
+class NirEyeAdapter(PiCameraNirAdapter):
+    """M-01 live eye path: pulses the IR LED with a fresh random code (secrets), finds eye ROIs
+    in each LED on/off pair (features.eye_roi) and emits the `eye` sample S_eye consumes.
+    `cfg["grab"]` may inject a (led_bit) -> (on, off) callable (used by tests and replay)."""
+    id, caps = "camera_noir_eye", {"eye"}
+
+    def open(self, cfg: dict) -> None:
+        from ..features.eye_roi import EyeTracker
+        self._grab = cfg.get("grab")
+        if self._grab is None:
+            super().open(cfg)
+        else:
+            AdapterBase.open(self, cfg)
+        self._tracker = EyeTracker(fps=float(cfg.get("fps", 30)), window=int(cfg.get("window", 30)))
+
+    def _pair(self, bit: int):
+        if self._grab is not None:
+            return self._grab(bit)
+        if self._led is None:
+            raise DriverUnavailable("eye path needs the IR LED (glint challenge)")
+        if bit:
+            self._led.on(); on = self._gray(); self._led.off()
+        else:
+            on = self._gray()
+        return on, self._gray()
+
+    def read(self, timeout_s: float):
+        import secrets
+        bit = secrets.randbits(1)
+        on, off = self._pair(bit)
+        out = self._tracker.update(bit, on, off)
+        return None if out is None else self._sample(out, quality=out["pupil_q"])
+
+    def close(self) -> None:
+        if self._grab is None:
+            super().close()
+
+
 class IrLed:
     """850 nm LED on a GPIO via gpiozero (BSD-3) with a hard duty-cycle cap (<=25%, IEC 62471 worksheet)."""
 
@@ -319,5 +357,5 @@ class AndroidBridgeAdapter(AdapterBase):
         return self._sample(msg) if msg else None
 
 
-REAL = [Mlx90640Adapter, UvcThermalAdapter, PiCameraNirAdapter, BleScanAdapter, WifiBeaconAdapter, GpsAdapter,
+REAL = [Mlx90640Adapter, UvcThermalAdapter, PiCameraNirAdapter, NirEyeAdapter, BleScanAdapter, WifiBeaconAdapter, GpsAdapter,
         Mr60Adapter, RtlSdrProbe, AndroidBridgeAdapter]

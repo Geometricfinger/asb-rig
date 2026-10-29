@@ -14,7 +14,7 @@ Version 0.1.0. "Real" = implemented and unit-tested headless. "Untested on hardw
 | Feature extractors (glint, NIR, thermal, pupil, blink, saccade, micro-saccade report, glint code, PLR, rPPG/POS, band SNR, AP clock skew, BLE drift, device type, site baselines) | **Real** algorithms, tested on synthetic signals only |
 | Voice tiers (Python) | **Real**, tested with a null TTS; Flite backend untested on hardware |
 | Hardware drivers (MLX90640, PureThermal, picamera2 + IR LED, bleak, iw, NMEA GPS, MR60BHA2, rtl_power) | **Untested on hardware**; parsers (NMEA, MR60 frames, iw scan) and LED duty cap are unit-tested. The MR60BHA2 frame type IDs follow the vendor's published protocol but were not checked against a device |
-| Eye ROI detection (Haar cascade) | **Stub**: the eye score consumes pre-extracted features; ROI finding on live frames is not wired yet |
+| Eye ROI detection (live frames) | **Real**, tested on synthetic NIR frames: dark-pupil + glint detector or landmark crop (`features/eye_roi.py`, ADR-0051), `EyeTracker` → `eye` sample, `camera_noir_eye` adapter. **Untested on hardware**; thresholds need tuning on the real camera |
 | Speaker embedding (ECAPA) and anti-spoof (AASIST) models | **Not included** (data terms unverified). `S_voice` takes a spoof score from the model port |
 | Android app: gate, Keystore wrap, SQLCipher store, panic, offline TTS, fallback node logic, zones | **Real source; builds in CI only** (no device testing yet) |
 | Android Noise channel | **Stub**: not yet implemented in Kotlin (noise-java is not on Maven Central; needs vendoring or a Kotlin port) |

@@ -4,6 +4,7 @@ All notable changes. Format: Keep a Changelog; versioning: SemVer. Contracts C1â
 
 ## [Unreleased]
 ### Added
+- Live eye ROI (M-01): `oiris/features/eye_roi.py` (dark-pupil + glint, or landmarks), `EyeTracker`, `NirEyeAdapter` (`camera_noir_eye`); ADR-0051. Tests: `tests/test_eye_roi.py`.
 - Dashboard M-16 review page `/face` (`oiris/dashboard/face.py`): status, browse possible matches, delete entry, delete person (verified), disable+wipe (typed WIPE, verified), enrollment guide with angle checklist; per-process form token, `form-action 'self'` CSP; `oiris dashboard` wires M-16 only when on and opted in. Tests: `tests/test_dashboard.py`.
 - M-16 face matching (optional, off by default; ADR-0049/0050, docs/FACE_MATCHING_MODULE_SPEC.md): `oiris/modules/face_match/` (FaceMatchPort, module core, EnrollmentPort with unlimited enrollment and 5-angle guided capture, quality checks, personal matching, research-mode anonymous counts, review log with per-entry delete, retention, export block, verified crypto-erase on disable and person delete, fault-isolation supervisor), `face_match_gate.py` (lazy load), `oiris face-match` CLI, schema migration v4 (`fm_*` tables), `face_match` port v1.0, `M-16` flag (DEFAULT_OFF).
 - Backends: `opencv_zoo` (YuNet MIT + SFace Apache-2.0, weights fetched on request with pinned SHA-256) and a TEST-ONLY deterministic backend.
