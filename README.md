@@ -60,3 +60,7 @@ Read [ETHICS.md](ETHICS.md). Short version: consent first, private premises, pas
 [CONTRIBUTING.md](CONTRIBUTING.md) · [docs/EXTENDING.md](docs/EXTENDING.md) · [SECURITY.md](SECURITY.md) · [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
 
 Licensed under Apache-2.0.
+
+## Say hi 👋
+
+Thanks for stopping by! It's totally okay to just say hi. If you've tried this project or just read through it, we'd love to hear what you think, so feel free to open an issue and share. Got an idea to make it better? Suggestions and pull requests are very welcome, big or small.
