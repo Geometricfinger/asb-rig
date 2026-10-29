@@ -18,6 +18,7 @@ section{{border:1px solid #888;padding:8px}} #D1{{grid-column:1/4}} h2{{font-siz
 <section id=D4><h2>D4 Sweep timeline</h2>No sweeps in demo mode.</section>
 <section id=D5><h2>D5 Sensor health</h2>{health}</section>
 <section id=D6><h2>D6 Review queue</h2>Confirmed/benign sightings awaiting review appear here.</section>
+<p style="grid-column:1/4"><a href="/face">Face match (M-16, optional, off by default)</a></p>
 <p style="grid-column:1/4"><small>Research tool. Signatures are observations with benign causes; never an identity.</small></p>"""
 
 
@@ -29,9 +30,25 @@ def render(res: dict) -> str:
     return PAGE.format(status=status, sigs=f"<ul>{sigs}</ul>", attr=html.escape(OSM_ATTRIBUTION), health=f"<ul>{health}</ul>")
 
 
-def serve(cfg: Config, port: int = 8765, scenario: str = "quiet") -> None:
+def serve(cfg: Config, port: int = 8765, scenario: str = "quiet", face_module=None) -> None:
+    from .face import FaceReview
+    face = FaceReview(face_module)
+
     class H(BaseHTTPRequestHandler):
+        def _send(self, code: int, body: bytes, ctype: str = "text/html; charset=utf-8") -> None:
+            self.send_response(code)
+            self.send_header("Content-Type", ctype)
+            self.send_header("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'")
+            self.end_headers(); self.wfile.write(body)
+
+        def do_POST(self):
+            n = min(int(self.headers.get("Content-Length") or 0), 65536)
+            code, msg = face.post(self.path, self.rfile.read(n).decode("utf-8", "replace"))
+            self._send(code, face.render(msg).encode())
+
         def do_GET(self):
+            if self.path == "/face":
+                return self._send(200, face.render().encode())
             res = run_scenario(scenario, 1, config=cfg)[-1]
             body = json.dumps(res).encode() if self.path == "/api/latest" else render(res).encode()
             self.send_response(200)

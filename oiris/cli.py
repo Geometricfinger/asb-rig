@@ -48,7 +48,17 @@ def main(argv: list[str] | None = None) -> int:
         record_clip(a.scenario, a.out or Path(f"clip_{a.scenario}"), a.steps); return 0
     if a.command == "dashboard":
         from .dashboard.server import serve
-        serve(cfg, port=a.port); return 0
+        face = None
+        if cfg.enabled("M-16"):  # the face-match page is live only when M-16 is on AND opted in
+            from .face_match_cli import _ctx
+            from .modules import face_match_gate
+            from .registry import default_registry
+            _, ks, db, chain = _ctx(cfg)
+            try:
+                face = face_match_gate.load(cfg, db, ks, default_registry(), chain=chain)
+            except PermissionError as e:
+                print(f"face match page disabled: {e}")
+        serve(cfg, port=a.port, face_module=face); return 0
     if a.command == "selftest" or a.headless:
         from .headless import run_replay, run_scenario
         res = run_replay(a.replay, None, cfg) if a.replay else run_scenario(a.scenario, a.steps, config=cfg)
