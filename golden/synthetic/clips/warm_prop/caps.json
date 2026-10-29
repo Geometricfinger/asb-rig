@@ -1,0 +1,32 @@
+{
+ "sim_nir": [
+  "nir_pair"
+ ],
+ "sim_thermal": [
+  "thermal_frame"
+ ],
+ "sim_ble": [
+  "rf_adv"
+ ],
+ "sim_rf_drift": [
+  "rf_drift"
+ ],
+ "sim_radar": [
+  "radar"
+ ],
+ "sim_eye": [
+  "eye"
+ ],
+ "sim_skin": [
+  "skin_rgb"
+ ],
+ "sim_voice": [
+  "voice_feat"
+ ],
+ "sim_motion": [
+  "motion"
+ ],
+ "sim_site": [
+  "site_diff"
+ ]
+}

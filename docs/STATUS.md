@@ -9,7 +9,7 @@ Version 0.1.0. "Real" = implemented and unit-tested headless. "Untested on hardw
 | Guards (vocabulary, consent, privacy, retention, phrases, passive radio) | **Real**, tested |
 | Security (AES-GCM, keystore + scrypt, Noise_XX + rekey, hash chain + anchors, panic, wipe) | **Real** in Python, tested. LUKS2 data-partition setup is scripted (`scripts/pi_luks2_setup.sh`: idempotent, `--dry-run`, typed confirmation; tested in dry-run with faked tools). **Never run on a real Pi yet** |
 | Sighting log, sweep timeline, migrations | **Real**, tested |
-| Golden manifest, freeze, withdrawal, feedback loop, format migration | **Real**, tested. **No golden data exists yet**; expectations come from simulated scenarios |
+| Golden manifest, freeze, withdrawal, feedback loop, format migration | **Real**, tested. **Synthetic seed set** in `golden/synthetic/` (clearly labelled synthetic; tooling `scripts/make_synthetic_golden.py`, checked in CI). **No real golden data** (needs hardware recordings and consenting volunteers; procedure in golden/README.md) |
 | Headless mode, CLI, replay/record | **Real**, tested |
 | Feature extractors (glint, NIR, thermal, pupil, blink, saccade, micro-saccade report, glint code, PLR, rPPG/POS, band SNR, AP clock skew, BLE drift, device type, site baselines) | **Real** algorithms, tested on synthetic signals only |
 | Voice tiers (Python) | **Real**, tested with a null TTS; Flite backend untested on hardware |

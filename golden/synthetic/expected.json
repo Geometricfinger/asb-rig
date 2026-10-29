@@ -1,0 +1,44 @@
+{
+ "camera_lens": {
+  "anomaly_index": 0.2423,
+  "level": "attention",
+  "signatures": [
+   "A1",
+   "A10",
+   "A4"
+  ],
+  "suppressed": false
+ },
+ "fixed_emitter_drift": {
+  "anomaly_index": 0.1708,
+  "level": "fyi",
+  "signatures": [
+   "A9"
+  ],
+  "suppressed": false
+ },
+ "quiet": {
+  "anomaly_index": 0.0847,
+  "level": null,
+  "signatures": [],
+  "suppressed": false
+ },
+ "replay_screen": {
+  "anomaly_index": 0.1756,
+  "level": "fyi",
+  "signatures": [
+   "A5"
+  ],
+  "suppressed": false
+ },
+ "warm_prop": {
+  "anomaly_index": 0.4239,
+  "level": "attention",
+  "signatures": [
+   "A11",
+   "A3",
+   "A5"
+  ],
+  "suppressed": false
+ }
+}

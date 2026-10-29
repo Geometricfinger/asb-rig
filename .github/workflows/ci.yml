@@ -35,6 +35,7 @@ jobs:
             s=$(basename "$f" .json)
             oiris --headless --scenario "$s" --steps 3 --expect "$f" > /dev/null
           done
+          python scripts/make_synthetic_golden.py --check
 
   build:
     name: build (macOS, APK + macOS artifact, one commit)
