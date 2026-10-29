@@ -50,7 +50,17 @@ def _round(o):
     return o
 
 
-def run_sync(engine: Engine, steps: int) -> list[dict]:
+def _round_keep(o):
+    if isinstance(o, float):
+        return round(o, 6)
+    if isinstance(o, dict):
+        return {k: _round_keep(v) for k, v in o.items()}
+    if isinstance(o, list):
+        return [_round_keep(v) for v in o]
+    return o
+
+
+def run_sync(engine: Engine, steps: int, keep_health: bool = False) -> list[dict]:
     """Virtual clock: pull every adapter synchronously, one sample per step, then fuse."""
     out = []
     for _ in range(steps):
@@ -62,7 +72,8 @@ def run_sync(engine: Engine, steps: int) -> list[dict]:
                 continue
             if s is not None and engine.bus.validator(s):
                 engine.bus.queues[aid].append(s)
-        out.append(_round(engine.step()))
+        res = engine.step()
+        out.append(_round_keep(res) if keep_health else _round(res))
     return out
 
 
@@ -111,3 +122,29 @@ def _jsonable(o):
     if isinstance(o, list):
         return [_jsonable(v) for v in o]
     return o
+
+
+ALL_FAMILIES = ["optical", "thermal", "rf", "vital", "eye_liveness", "voice"]
+
+
+def run_video(url: str, steps: int = 30, config: Config | None = None, registry=None) -> list[dict]:
+    """Run the real pipeline on a video file or stream URL. Only the camera is real; every other
+    sensor is ABSENT (no simulated stand-ins), and each step says so in `inputs`."""
+    from ..registry import default_registry
+    reg = registry or default_registry()
+    e = Engine(config or Config(), reg)
+    a = reg.create("sensor", "video", url)
+    a.open({})
+    e.add_adapter(a)
+    out = []
+    try:
+        for r in run_sync(e, steps, keep_health=True):
+            r["inputs"] = {"real": {"video": {"url": url, "source": a.SOURCE, "caps": sorted(a.caps)}},
+                           "simulated": [],
+                           "absent_families": [f for f in ALL_FAMILIES if f in r.get("families_missing", [])],
+                           "note": "nir_pair from visible video uses one frame for on/off (no IR LED): A1 glint "
+                                   "cannot fire; A2 is measured on visible light. Frames are not stored."}
+            out.append(r)
+    finally:
+        a.close()
+    return out

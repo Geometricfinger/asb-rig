@@ -18,6 +18,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--headless", action="store_true")
     p.add_argument("--scenario", default="quiet")
     p.add_argument("--replay", type=Path)
+    p.add_argument("--video", help="video file or stream URL (camera only; other sensors absent)")
     p.add_argument("--steps", type=int, default=3)
     p.add_argument("--config", type=Path)
     p.add_argument("--out", type=Path)
@@ -42,7 +43,11 @@ def main(argv: list[str] | None = None) -> int:
         serve(cfg, port=a.port); return 0
     if a.command == "selftest" or a.headless:
         from .headless import run_replay, run_scenario
-        res = run_replay(a.replay, None, cfg) if a.replay else run_scenario(a.scenario, a.steps, config=cfg)
+        if a.video:
+            from .headless import run_video
+            res = run_video(a.video, a.steps, cfg)
+        else:
+            res = run_replay(a.replay, None, cfg) if a.replay else run_scenario(a.scenario, a.steps, config=cfg)
         txt = json.dumps(res, indent=1, sort_keys=True)
         if a.out:
             a.out.write_text(txt, encoding="utf-8")
