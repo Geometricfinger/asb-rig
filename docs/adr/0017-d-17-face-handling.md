@@ -1,6 +1,6 @@
 # ADR-0017: Face handling (D-17)
 
-- Status: Accepted (settled default, spec v2)
+- Status: Superseded by ADR-0049
 - Date: 2026-10-28
 - Source: docs/spec/ASB-Build-Spec-v2.pdf, section 15
 
@@ -10,7 +10,7 @@ Operator-aimed; transient eye-ROI detection in RAM; no templates; no stored face
 
 ## Where it is enforced
 
-oiris/guard/privacy.py (64x64 crops only)
+superseded by [ADR-0049](0049-face-handling-enrolled-templates.md); oiris/guard/privacy.py (64x64 crops only)
 
 ## Changing it
 

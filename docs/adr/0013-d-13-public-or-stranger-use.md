@@ -1,6 +1,6 @@
 # ADR-0013: Public or stranger use (D-13)
 
-- Status: Accepted (settled default, spec v2)
+- Status: Superseded by ADR-0050
 - Date: 2026-10-28
 - Source: docs/spec/ASB-Build-Spec-v2.pdf, section 15
 
@@ -10,7 +10,7 @@ Never in Phase 0–1.
 
 ## Where it is enforced
 
-Hardware/process decision; documented only (no code path).
+superseded by [ADR-0050](0050-stranger-use-face-match-modes.md); Hardware/process decision; documented only (no code path).
 
 ## Changing it
 

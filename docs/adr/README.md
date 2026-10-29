@@ -16,11 +16,11 @@ One ADR per settled default from the v2 spec decision log (D-xx), plus project A
 | [ADR-0010](0010-d-10-thermal.md) | D-10 | Thermal | Accepted (settled default, spec v2) |
 | [ADR-0011](0011-d-11-fusion.md) | D-11 | Fusion | Accepted (settled default, spec v2) |
 | [ADR-0012](0012-d-12-storage.md) | D-12 | Storage | Accepted (settled default, spec v2) |
-| [ADR-0013](0013-d-13-public-or-stranger-use.md) | D-13 | Public or stranger use | Accepted (settled default, spec v2) |
+| [ADR-0013](0013-d-13-public-or-stranger-use.md) | D-13 | Public or stranger use | Superseded by ADR-0050 |
 | [ADR-0014](0014-d-14-legal-review.md) | D-14 | Legal review | Accepted (settled default, spec v2) |
 | [ADR-0015](0015-d-15-eye-scope.md) | D-15 | Eye scope | Accepted (settled default, spec v2) |
 | [ADR-0016](0016-d-16-eye-hardware.md) | D-16 | Eye hardware | Accepted (settled default, spec v2) |
-| [ADR-0017](0017-d-17-face-handling.md) | D-17 | Face handling | Accepted (settled default, spec v2) |
+| [ADR-0017](0017-d-17-face-handling.md) | D-17 | Face handling | Superseded by ADR-0049 |
 | [ADR-0018](0018-d-18-voice.md) | D-18 | Voice | Accepted (settled default, spec v2) |
 | [ADR-0019](0019-d-19-liveness-stack.md) | D-19 | Liveness stack | Accepted (settled default, spec v2) |
 | [ADR-0020](0020-d-20-fingerprints.md) | D-20 | Fingerprints | Accepted (settled default, spec v2) |
@@ -52,3 +52,5 @@ One ADR per settled default from the v2 spec decision log (D-xx), plus project A
 | [ADR-0046](0046-d-01-purchase-approval-tier-a-v2-461-tier-b-v.md) | D-01 | Purchase approval. Tier A v2 ≈ $461; Tier B v2 +$401; props +$50–150; Phase 2 glasses +$399–449 | Open (owner decision) |
 | [ADR-0047](0047-public-repo-hosted-ci.md) | — | Public repo, hosted CI | Accepted |
 | [ADR-0048](0048-fault-isolation-and-ports.md) | — | Ports & adapters, fault isolation | Accepted |
+| [ADR-0049](0049-face-handling-enrolled-templates.md) | D-17 | Face handling: enrolled-only templates (supersedes D-17) | Accepted |
+| [ADR-0050](0050-stranger-use-face-match-modes.md) | D-13 | Public or stranger use: face-match modes (supersedes D-13) | Accepted |
