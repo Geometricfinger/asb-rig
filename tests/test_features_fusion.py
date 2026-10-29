@@ -15,9 +15,47 @@ def test_glint_found_only_with_led_difference():
 
 
 def test_nir_emitter():
-    f = np.zeros((10, 10), np.uint8); f[0, 0:5] = 255
+    f = np.zeros((10, 10), np.uint8); f[4:6, 4:6] = 255          # point-like spot (was a 1x5 edge streak)
     assert optical.nir_emitter_score(f)[0] > 0
     assert optical.nir_emitter_score(np.zeros((10, 10), np.uint8))[0] == 0
+
+
+def _scene(h=180, w=320):
+    r = np.random.default_rng(3)
+    return r.integers(20, 90, (h, w)).astype(np.uint8)
+
+
+def test_a2_ignores_large_sunlit_area():
+    f = _scene(); f[0:60, :] = 255                # saturated sky band
+    f[100:150, 200:300] = 252                     # sunlit rock face
+    assert optical.nir_point_spots(f) == []
+    assert optical.nir_emitter_score(f)[0] == 0.0
+
+
+def test_a2_ignores_streaks_and_unisolated_spots():
+    f = _scene(); f[90, 10:40] = 255              # thin glare streak
+    g = _scene(); g[50:70, 50:70] = 200; g[59:61, 59:61] = 255   # small spot inside a bright patch
+    assert optical.nir_emitter_score(f)[0] == 0.0 and optical.nir_emitter_score(g)[0] == 0.0
+
+
+def test_a2_point_spot_still_triggers():
+    f = _scene(); f[80:83, 150:153] = 255         # 3x3 emitter on a dark surround
+    spots = optical.nir_point_spots(f)
+    assert len(spots) == 1 and spots[0]["area"] == 9
+    assert optical.nir_emitter_score(f)[0] == 0.5
+    f[20:22, 30:32] = 255                         # second emitter -> full score
+    f[0:60, 200:320] = 255                        # plus a sunlit area, which is ignored
+    assert optical.nir_emitter_score(f)[0] == 1.0
+
+
+def test_glint_unchanged_snapshot():
+    """Outputs recorded from the pre-change implementation (main @ 7f41ea1); A1 must not move."""
+    r = np.random.default_rng(7)
+    off = r.integers(0, 60, (48, 64)).astype(np.uint8); on = off.copy()
+    on[10:12, 10:12] = 250; on[30, 40] = 200; on[0:20, 50:64] = 255
+    c = optical.glint_candidates(on, off)
+    assert c == [{"y": 10.5, "x": 10.5, "area": 4, "peak": 243.0}, {"y": 30.0, "x": 40.0, "area": 1, "peak": 162.0}]
+    assert optical.glint_score(c) == (0.9529411764705882, 0.7)
 
 
 def test_thermal_render_default_and_toggle():
@@ -160,3 +198,14 @@ def test_liveness_indicators():
     assert r["a11"] and set(r["families_absent"]) == {"vital", "eye"}
     assert "silicone mask" in r["limit"]
     assert not indicators([S("S_live", 0.9)])["a11"]
+
+
+def test_a2_ignores_sparkle_texture_and_clusters():
+    f = _scene()
+    for i in range(8):                                    # 8 isolated highlights = texture, not emitters
+        f[20 + 18 * i:22 + 18 * i, 40:42] = 255
+    assert len(optical.nir_point_spots(f)) == 8 and optical.nir_emitter_score(f)[0] == 0.0
+    g = _scene()                                          # sky fragments seen through leaves
+    for dy, dx in [(0, 0), (0, 6), (6, 0), (6, 6), (3, 10)]:
+        g[60 + dy:62 + dy, 100 + dx:102 + dx] = 255
+    assert optical.nir_emitter_score(g)[0] == 0.0
