@@ -10,7 +10,7 @@ Exempt-group parts, ≤2 LEDs per bank (two banks), ≤100 mA, duty caps, no opt
 
 ## Where it is enforced
 
-asb/adapters/drivers.py IrLed (duty cap <=25%), Config.pled_duty_cap
+oiris/adapters/drivers.py IrLed (duty cap <=25%), Config.pled_duty_cap
 
 ## Changing it
 

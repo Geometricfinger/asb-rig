@@ -1,2 +1,0 @@
-# asb.security — M-04
-`aead` (AES-256-GCM, unique nonces, per-key cap), `keys` (scrypt-wrapped master key, crypto-erase), `channel` (Noise_XX_25519_ChaChaPoly_BLAKE2s, paired-fingerprint check, rekey ≤1,000 msgs/10 min), `hashchain` (HMAC-SHA256 chain + Ed25519 anchors, verify detects edit/delete/reorder/truncation), `panic` (soft/hard panic, 10-fail wipe, signed remote wipe), `ct` (constant-time compare). **Depends on**: cryptography, PyNaCl, noiseprotocol. No custom primitives.

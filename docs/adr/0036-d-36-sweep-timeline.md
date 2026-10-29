@@ -10,7 +10,7 @@ SQLite/SQLCipher, hash-chained, "new since last sweep".
 
 ## Where it is enforced
 
-asb/store/sightings.SweepTimeline
+oiris/store/sightings.SweepTimeline
 
 ## Changing it
 

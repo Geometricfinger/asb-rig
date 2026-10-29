@@ -10,7 +10,7 @@ Protects the owner's data on the owner's device only.
 
 ## Where it is enforced
 
-asb/security/
+oiris/security/
 
 ## Changing it
 

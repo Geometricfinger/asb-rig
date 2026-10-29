@@ -4,11 +4,11 @@ import pytest
 from hypothesis import given, settings, strategies as st
 from nacl.signing import SigningKey
 
-from asb.security.aead import Sealer
-from asb.security.keys import KeyStore, KeyStoreError
-from asb.security import hashchain as hc
-from asb.security.channel import SecureChannel, new_static, fingerprint, pub_from_priv, ChannelError
-from asb.security.panic import PanicController
+from oiris.security.aead import Sealer
+from oiris.security.keys import KeyStore, KeyStoreError
+from oiris.security import hashchain as hc
+from oiris.security.channel import SecureChannel, new_static, fingerprint, pub_from_priv, ChannelError
+from oiris.security.panic import PanicController
 
 
 def test_aead_roundtrip_and_tamper(key):
@@ -165,7 +165,7 @@ def test_constant_time_lint():
     """No `==`/`!=` comparisons on secret-named variables in the security/store code."""
     rx = re.compile(rf"\b\w*{SECRET_NAMES}\w*\s*[!=]=|[!=]=\s*\w*{SECRET_NAMES}\b", re.I)
     bad = []
-    for p in Path("asb").rglob("*.py"):
+    for p in Path("oiris").rglob("*.py"):
         for n, line in enumerate(p.read_text().splitlines(), 1):
             code = line.split("#")[0]
             if rx.search(code) and "len(" not in code and "is None" not in code and '"' not in code:
@@ -174,7 +174,7 @@ def test_constant_time_lint():
 
 
 def test_no_plaintext_on_disk(db):
-    from asb.store.sightings import SightingLog, GpsFix
+    from oiris.store.sightings import SightingLog, GpsFix
     c = hc.HashChain(os.urandom(32), SigningKey.generate())
     log = SightingLog(db, c)
     log.add({"signature": "A1", "note": "CANARY-7f3a"}, GpsFix(38.123456, -85.654321, "3d"))

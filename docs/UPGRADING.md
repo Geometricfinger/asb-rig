@@ -1,11 +1,11 @@
 # Upgrading, versioning and deprecation
 
 ## Versions
-- **Package**: SemVer (`asb.__version__`).
+- **Package**: SemVer (`oiris.__version__`).
 - **Ports** (`registry.PORT_VERSIONS`): a plugin's major must equal the port's major. Minor bumps are additive.
 - **Contracts C1–C9**: semantic version each (`SCHEMA_VERSION` for C1–C3, SQLite `user_version` for C4, `FORMAT_VERSION` for C5, manifest fields for C9).
-- **SQLite schema**: `PRAGMA user_version`; migrations in `asb/store/migrations.py` apply in a transaction at startup. A DB newer than the code is refused.
-- **Golden manifest**: `format_version`; `asb.modules.golden.migrate()` upgrades old files on load; newer files are refused.
+- **SQLite schema**: `PRAGMA user_version`; migrations in `oiris/store/migrations.py` apply in a transaction at startup. A DB newer than the code is refused.
+- **Golden manifest**: `format_version`; `oiris.modules.golden.migrate()` upgrades old files on load; newer files are refused.
 
 ## Policy (C8)
 1. Consumers support the current and the previous minor of every contract.
@@ -17,6 +17,6 @@
 ```bash
 git pull && pip install -e ".[dev]"
 pytest                      # includes migration tests
-asb --headless --scenario quiet   # opens nothing on disk; real runs migrate the DB on first open
+oiris --headless --scenario quiet   # opens nothing on disk; real runs migrate the DB on first open
 ```
 Back up the encrypted data directory first; migrations are forward-only.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""License audit (R-05). Checks installed Python distributions required by asb-rig (runtime
+"""License audit (R-05). Checks installed Python distributions required by O Iris (runtime
 + optional hw extras that are installed) against the allow-list, and the Android
 dependency list in android/dependencies.txt. Exit 1 on any denied or unknown license.
 Allowed: MIT, BSD, Apache-2.0, ISC, PSF, MPL-2.0. Denied: GPL in-process, AGPL, non-commercial."""

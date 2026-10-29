@@ -10,7 +10,7 @@ Near-range (0.3–1 m) pupil, blink, glint-code; micro-saccades report-only; lig
 
 ## Where it is enforced
 
-asb/features/eye.py (microsaccades_report, pupil_light_response)
+oiris/features/eye.py (microsaccades_report, pupil_light_response)
 
 ## Changing it
 

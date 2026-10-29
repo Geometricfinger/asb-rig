@@ -2,11 +2,11 @@ import os, sqlite3
 import pytest
 from nacl.signing import SigningKey
 
-from asb.security.hashchain import HashChain, verify
-from asb.store.db import DB, MigrationError
-from asb.store.migrations import LATEST
-from asb.store.sightings import SightingLog, SweepTimeline, GpsFix, OSM_ATTRIBUTION
-from asb.modules import golden as g
+from oiris.security.hashchain import HashChain, verify
+from oiris.store.db import DB, MigrationError
+from oiris.store.migrations import LATEST
+from oiris.store.sightings import SightingLog, SweepTimeline, GpsFix, OSM_ATTRIBUTION
+from oiris.modules import golden as g
 
 
 def test_migrations_fresh_and_incremental(tmp_path, key):
@@ -17,7 +17,7 @@ def test_migrations_fresh_and_incremental(tmp_path, key):
     d = DB.__new__(DB)
     d.path = str(p); d.conn = sqlite3.connect(str(p), isolation_level=None)
     import threading; d.lock = threading.RLock()
-    from asb.security.aead import Sealer; d.sealer = Sealer(key)
+    from oiris.security.aead import Sealer; d.sealer = Sealer(key)
     assert d.migrate(1) == 1 and not d.has_table("sighting")
     d.execute("INSERT INTO audit_log(t_wall,kind,detail) VALUES(1,'x','{}')")
     assert d.migrate() == LATEST
@@ -48,7 +48,7 @@ def test_sightings_gps_policy_and_export(db):
 
 
 def test_db_unreadable_with_wrong_key(tmp_path, key):
-    from asb.security.aead import Sealer
+    from oiris.security.aead import Sealer
     d = DB(tmp_path / "x.db", key)
     log = SightingLog(d, HashChain(os.urandom(32), SigningKey.generate()))
     sid = log.add({"signature": "A1"}, GpsFix(1, 2, "3d"))

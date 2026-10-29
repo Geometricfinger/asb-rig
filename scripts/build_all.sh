@@ -13,14 +13,14 @@ mkdir -p "$OUT"
 
 # 1) Android APK (unsigned release + debug for install testing)
 ( cd android && gradle --no-daemon assembleDebug assembleRelease )
-cp android/app/build/outputs/apk/debug/app-debug.apk "$OUT/asb-$COMMIT-debug.apk"
-cp android/app/build/outputs/apk/release/app-release-unsigned.apk "$OUT/asb-$COMMIT-release-unsigned.apk"
+cp android/app/build/outputs/apk/debug/app-debug.apk "$OUT/o-iris-$COMMIT-debug.apk"
+cp android/app/build/outputs/apk/release/app-release-unsigned.apk "$OUT/o-iris-$COMMIT-release-unsigned.apk"
 
 # 2) Host artifact: wheel + self-test (on macOS this is the macOS artifact)
 python3 -m pip wheel --no-deps -w "$OUT" . >/dev/null
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-python3 -m asb.cli selftest --scenario camera_lens --steps 3 --expect golden/expected/camera_lens.json
-tar -czf "$OUT/asb-$COMMIT-$OS.tar.gz" -C "$OUT" "$(cd "$OUT" && ls asb_rig-*.whl)" -C "$PWD" README.md LICENSE NOTICE THIRD_PARTY.md
+python3 -m oiris.cli selftest --scenario camera_lens --steps 3 --expect golden/expected/camera_lens.json
+tar -czf "$OUT/o-iris-$COMMIT-$OS.tar.gz" -C "$OUT" "$(cd "$OUT" && ls o_iris-*.whl)" -C "$PWD" README.md LICENSE NOTICE THIRD_PARTY.md
 
 # 3) Manifest
 python3 - "$OUT" "$COMMIT" <<'PY'

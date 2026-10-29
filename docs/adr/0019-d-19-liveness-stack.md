@@ -10,7 +10,7 @@
 
 ## Where it is enforced
 
-asb/modules/liveness.py; Config.DEFAULT_OFF
+oiris/modules/liveness.py; Config.DEFAULT_OFF
 
 ## Changing it
 

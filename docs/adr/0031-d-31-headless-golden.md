@@ -10,7 +10,7 @@ Replay adapters, virtual clock, subject-disjoint splits, frozen test hash at G0.
 
 ## Where it is enforced
 
-asb/headless/, asb/modules/golden.py
+oiris/headless/, oiris/modules/golden.py
 
 ## Changing it
 

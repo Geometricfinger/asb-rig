@@ -1,5 +1,5 @@
 import pytest
-from asb.security.aead import Sealer
+from oiris.security.aead import Sealer
 
 
 @pytest.fixture
@@ -9,7 +9,7 @@ def key():
 
 @pytest.fixture
 def db(tmp_path, key):
-    from asb.store.db import DB
+    from oiris.store.db import DB
     d = DB(tmp_path / "t.db", key)
     yield d
     d.close()

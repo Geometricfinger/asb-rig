@@ -10,7 +10,7 @@ HMAC hash chain + Ed25519 anchors on the phone every 60 s or 100 records.
 
 ## Where it is enforced
 
-asb/security/hashchain.py
+oiris/security/hashchain.py
 
 ## Changing it
 

@@ -4,7 +4,7 @@ All notable changes. Format: Keep a Changelog; versioning: SemVer. Contracts C1�
 
 ## [0.1.0] - 2026-10-28
 ### Added
-- Python runtime: sensor bus (thread per adapter, watchdog, restart/back-off, circuit breaker), plugin registry with `asb.plugins` entry points, validated config with module feature flags.
+- Python runtime: sensor bus (thread per adapter, watchdog, restart/back-off, circuit breaker), plugin registry with `oiris.plugins` entry points, validated config with module feature flags.
 - Score modules S_glint, S_nir_emit, S_thermal, S_rf, S_rf_drift, S_radar, S_motion, S_eye, S_live, S_voice, S_newobj; fusion v2 (six families, missing mask, ≥2-family rule, suppression).
 - Modules M-01…M-15 per build spec v2 (see docs/STATUS.md for real vs stub).
 - Guards: vocabulary, consent, privacy, retention, phrases, passive-only radio.

@@ -10,7 +10,7 @@ RF-first; optical comparison only at ArUco anchors; optical A10 report-only.
 
 ## Where it is enforced
 
-asb/features/baseline.py
+oiris/features/baseline.py
 
 ## Changing it
 

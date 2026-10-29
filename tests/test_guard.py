@@ -1,6 +1,6 @@
 import pytest
-from asb.guard import vocabulary as v, phrases, consent, privacy, radio
-from asb.schema import Event, SIGNATURES
+from oiris.guard import vocabulary as v, phrases, consent, privacy, radio
+from oiris.schema import Event, SIGNATURES
 import numpy as np
 
 
@@ -68,7 +68,7 @@ def test_privacy_rules():
 
 
 def test_retention(db):
-    from asb.guard.retention import purge
+    from oiris.guard.retention import purge
     db.execute("INSERT INTO sighting(sighting_id,t_wall,codes,body,verdict) VALUES('old',0,'[]',x'00','benign')")
     db.execute("INSERT INTO sighting(sighting_id,t_wall,codes,body,verdict,keep) VALUES('kept',0,'[]',x'00','benign',1)")
     db.execute("INSERT INTO sighting(sighting_id,t_wall,codes,body,verdict) VALUES('new',?,'[]',x'00','benign')", (1e9,))

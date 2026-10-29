@@ -10,7 +10,7 @@ BLE adverts + AP beacons (incl. TSF) in managed mode; no monitor mode, cellular,
 
 ## Where it is enforced
 
-asb/guard/radio.py
+oiris/guard/radio.py
 
 ## Changing it
 

@@ -10,7 +10,7 @@
 
 ## Where it is enforced
 
-asb/modules/golden.py
+oiris/modules/golden.py
 
 ## Changing it
 

@@ -10,7 +10,7 @@ Python Protocol + Kotlin interface from one JSON schema.
 
 ## Where it is enforced
 
-asb/adapters/base.py, schema/*.json, android Fusion.kt
+oiris/adapters/base.py, schema/*.json, android Fusion.kt
 
 ## Changing it
 
