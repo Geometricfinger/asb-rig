@@ -25,5 +25,18 @@ MIGRATIONS: list[tuple[int, str]] = [
         consent_ok INTEGER, manifest_version INTEGER);
     CREATE TABLE chain_anchor(idx INTEGER PRIMARY KEY, head BLOB, sig BLOB);
     """),
+    # M-16 face matching (optional add-on, ADR-0049/0050). Tables exist always and stay empty
+    # unless the module is opted in. fm_unrecognized_count deliberately has no template,
+    # embedding, hash or face-ID column (spec section 8).
+    (4, """
+    CREATE TABLE fm_state(k TEXT PRIMARY KEY, v TEXT);
+    CREATE TABLE fm_enrolled(person_id TEXT PRIMARY KEY, display_name BLOB, template BLOB, dek BLOB, model_id TEXT,
+        model_version TEXT, consent_id TEXT, consent_note TEXT, guardian_enrolled INTEGER, shot_count INTEGER,
+        angles_covered TEXT, baseline_confidence REAL, enrolled_at REAL, expires_at REAL);
+    CREATE TABLE fm_encounter(entry_id TEXT PRIMARY KEY, person_id TEXT REFERENCES fm_enrolled(person_id) ON DELETE CASCADE,
+        seen_at REAL, place BLOB, confidence REAL, expires_at REAL);
+    CREATE TABLE fm_unrecognized_count(place_tag TEXT, place BLOB, date TEXT, time_bucket INTEGER, count INTEGER, expires_at REAL,
+        PRIMARY KEY(place_tag, date, time_bucket));
+    """),
 ]
 LATEST = MIGRATIONS[-1][0]

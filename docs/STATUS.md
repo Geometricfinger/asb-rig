@@ -23,4 +23,5 @@ Version 0.1.0. "Real" = implemented and unit-tested headless. "Untested on hardw
 | Dashboard | **Minimal** (zones D1–D6, headless data, 127.0.0.1 only) |
 | Glasses display (G zones) | **Not started** (Phase 2 after gate G1) |
 | Design tokens (C7) | **Not started** (Design workstream) |
+| M-16 face matching (optional, off by default) | **Real** core, tested headless with a test-only synthetic backend: opt-in, enrollment (unlimited people), matching, research counts, review log, verified wipe, fault isolation. Real OpenCV Zoo backend: weights downloaded on request, **never run on a real face in tests**. Guided capture UI: CLI only (Android/glasses screens not built) |
 | macOS artifact | Wheel + self-test tarball, unsigned; no `.app` bundle yet |

@@ -1,4 +1,4 @@
-"""Startup config: validated, safe defaults, feature flags per module (M-01..M-15)."""
+"""Startup config: validated, safe defaults, feature flags per module (M-01..M-16)."""
 from __future__ import annotations
 import json
 from dataclasses import dataclass, field, asdict
@@ -9,15 +9,40 @@ MODULES = {
     "M-05": "sighting_log", "M-06": "voice_output", "M-07": "location_baselines", "M-08": "thermal_view",
     "M-09": "headless", "M-10": "build", "M-11": "sensor_bus", "M-12": "feedback_loop",
     "M-13": "android_fallback", "M-14": "sweep_timeline", "M-15": "app_gate",
+    "M-16": "face_match",   # optional add-on (ADR-0049/0050): off by default, not imported until enabled
 }
 # Modules that cannot be disabled: security and the bus are load-bearing; guards are not modules.
 LOCKED_ON = {"M-04", "M-11"}
 # Gate-dependent modules ship disabled until their experiment passes (spec section 11, M-gates).
-DEFAULT_OFF = {"M-01", "M-02"}
+DEFAULT_OFF = {"M-01", "M-02", "M-16"}
 
 
 class ConfigError(ValueError):
     pass
+
+
+def validate_face_match(d: dict) -> list[str]:
+    """Validate M-16 settings without importing the module (it stays unloaded while off).
+    Mirrors oiris.modules.face_match.core.FaceMatchConfig; a test keeps the two in sync."""
+    if not isinstance(d, dict):
+        return ["face_match must be an object"]
+    errs = []
+    unknown = set(d) - FACE_MATCH_KEYS
+    if unknown:
+        errs.append(f"face_match: unknown keys {sorted(unknown)}")
+    if any(m not in ("personal", "research") for m in d.get("modes", [])): errs.append("face_match.modes: personal/research only")
+    if not 0.5 <= float(d.get("match_threshold", 0.8)) < 1.0: errs.append("face_match.match_threshold must be in [0.5, 1)")
+    if not 1 <= int(d.get("encounter_retention_days", 30)) <= 365: errs.append("face_match.encounter_retention_days must be 1..365")
+    if d.get("place_source", "named") not in ("named", "gps_0.01"): errs.append("face_match.place_source must be named|gps_0.01")
+    if not 5 <= int(d.get("enroll_min_shots", 5)) <= int(d.get("enroll_max_shots", 10)):
+        errs.append("face_match.enroll_min_shots must be >= 5 and <= enroll_max_shots")
+    if d.get("allow_test_backend"): errs.append("face_match.allow_test_backend is for tests only")
+    return errs
+
+
+FACE_MATCH_KEYS = {"modes", "jurisdiction", "require_enrollment_consent", "match_threshold", "encounter_retention_days", "place_source",
+                   "time_bucket_minutes", "allow_log_export", "enroll_min_shots", "enroll_max_shots", "enroll_required_angles",
+                   "reenroll_confidence_drop", "reenroll_window_matches", "adapter", "model_dir", "allow_test_backend"}
 
 
 @dataclass
@@ -41,6 +66,7 @@ class Config:
     max_unhealthy_families: int = 1
     allow_network: bool = False
     pled_duty_cap: float = 0.25
+    face_match: dict = field(default_factory=dict)   # M-16 settings, validated by FACE_MATCH_KEYS below
 
     def enabled(self, module: str) -> bool:
         return module in LOCKED_ON or bool(self.flags.get(module, False))
@@ -62,6 +88,7 @@ class Config:
         if not 1 <= self.rekey_seconds <= 600: errs.append("rekey_seconds must be 1..600")
         if not 0 < self.pled_duty_cap <= 0.25: errs.append("LED duty cap must be in (0, 0.25]")
         if self.queue_size < 1 or self.adapter_timeout_s <= 0: errs.append("queue/timeout must be positive")
+        errs += validate_face_match(self.face_match)
         if errs:
             raise ConfigError("; ".join(errs))
         return self

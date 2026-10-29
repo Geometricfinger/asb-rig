@@ -174,3 +174,57 @@ def test_model_load_failure_falls_back(tmp_path):
         p.write_text(content)
         assert load_weights(p, good).version == "last-good"
     assert load_weights(tmp_path / "missing.json").version == "prior-0"
+
+
+# ---- M-16 face backend fault injection (ADR-0048, face-matching spec section 15) ----------
+class _FaceBad:
+    name, license, model_id, model_version, test_only = "bad", "Apache-2.0", "bad", "1", True
+    def __init__(self, mode): self.mode = mode
+    def open(self, cfg): pass
+    def close(self): pass
+    def health(self): return (Health.OK, "")
+    def detect(self, frame, timeout_s):
+        if self.mode == "raise": raise RuntimeError("detector exploded")
+        if self.mode == "exit": raise SystemExit("plugin called exit()")
+        if self.mode == "hang": time.sleep(30)
+        if self.mode == "garbage": return [{"x": "nope"}]
+        return []
+    def embed(self, frame, box): raise AssertionError("never reached")
+    def compare(self, e, t): return None
+
+
+@pytest.mark.parametrize("mode", ["raise", "exit", "hang", "garbage"])
+def test_face_backend_faults_isolated(tmp_path, mode):
+    from oiris.modules.face_match import optin
+    from oiris.modules.face_match.backends.test_deterministic import synth_face_frame
+    from oiris.modules.face_match.core import FaceMatchConfig, FaceMatchModule
+    from oiris.security.keys import KeyStore
+    from oiris.store.db import DB
+    ks = KeyStore(tmp_path / "k.json"); ks.create("pw")
+    db = DB(tmp_path / "a.db", ks.subkey("db"))
+    optin.record_opt_in(db, None, "I UNDERSTAND", ["personal", "research"], "d", warning_shown=optin.WARNING_TEXT)
+    m = FaceMatchModule(db, ks, tmp_path, _FaceBad(mode), None, FaceMatchConfig(modes=["personal", "research"], allow_test_backend=True),
+                        timeout_s=0.2, breaker_threshold=3, breaker_cooldown_s=60)
+    e = Engine(Config(), face_match=m, face_place="P")
+    for a in sim.make("quiet"):
+        e.add_adapter(a)
+
+    class Cam(AdapterBase):
+        id, caps = "cam", {"face_frame"}
+        def read(self, t):
+            time.sleep(0.01); return self._sample(synth_face_frame(1))
+    e.add_adapter(Cam())
+    e.bus.start()
+    try:
+        results = []
+        for _ in range(3):
+            time.sleep(0.15); results.append(e.step())
+    finally:
+        e.bus.stop()
+    assert len(results) == 3 and all("anomaly_index" in r for r in results)          # fusion unaffected
+    assert m.guard.health == Health.FAILED and m.guard.breaker_open_until > 0         # breaker open
+    calls = m.guard.calls
+    r = m.process_frame(synth_face_frame(1), place="P")
+    assert r["health"] == "failed" and m.guard.calls == calls                          # no calls while open
+    assert e.bus.health()["cam"]["health"] == "ok"                                     # the camera adapter is fine
+    db.close()

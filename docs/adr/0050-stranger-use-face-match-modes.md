@@ -14,7 +14,7 @@ Never in Phase 0–1, with one exception: M-16 **personal mode** (matching only 
 **Principle:** every feature with questionable legality is an on/off switch. The user makes the determination, the risk is the user's own, and the feature is an option the user may use as they choose.
 
 ## Where it is enforced
-Hardware/process decision; documented only today. When M-16 is built, `research` mode is accepted once the user has completed the M-16 opt-in; jurisdiction information is shown as a warning only and never blocks it.
+`oiris/modules/face_match/optin.py` + `core.py`: `research` mode is accepted once the typed opt-in is recorded; strict jurisdiction profiles add a warning and force enrollment consent but never block research mode (`test_research_mode_unlocks_on_optin_in_any_jurisdiction`, `test_strict_jurisdiction_forces_consent_but_not_research`). The `fm_unrecognized_count` table has no template, embedding, hash or face-ID column (`test_research_mode_stores_no_face_data_and_cannot_link`).
 
 ## Changing it
 Write a new ADR that supersedes this one, update CHANGELOG.md, and (if it touches a guardrail) get owner sign-off. A change to a frozen test threshold cannot be used to declare a pass retroactively.

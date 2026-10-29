@@ -12,7 +12,7 @@ D-17 allowed only transient eye-ROI detection and stored no face templates. The 
 Eye handling is unchanged: operator-aimed; transient eye-ROI detection in RAM; no stored face crops. Face templates may be stored **only** for people the user explicitly enrolled in M-16 personal mode, encrypted on device with a dedicated subkey, never uploaded or exported. Templates of unenrolled people are never stored, in any mode. Disabling or removing M-16 crypto-erases all face data and verifies the wipe.
 
 ## Where it is enforced
-Today: oiris/guard/privacy.py still rejects every `face_template` (M-16 is not built). When M-16 is built, the guard allows `face_template` only from M-16 for an enrolled `person_id`; wipe-verification and no-stranger-template tests are required (spec §15).
+`oiris/guard/privacy.py`: `check_persist("face_template", ..., source="M-16", m16_enabled=True)` is the only accepted form; every other source and any stranger face data is refused. Storage, keys and wipe live in `oiris/modules/face_match/core.py` (per-person data keys sealed by a face key in `<data_dir>/face_match.key`, itself sealed by `keys.subkey("face-template")`). Tests: `tests/test_face_match.py` (wipe verification, person-delete undecryptability, research mode stores no face data, privacy guard).
 
 ## Changing it
 Write a new ADR that supersedes this one, update CHANGELOG.md, and (if it touches a guardrail) get owner sign-off. A change to a frozen test threshold cannot be used to declare a pass retroactively.

@@ -23,7 +23,7 @@ ASB is a research bench for **anomaly signatures**. It is not a lie detector, an
 Tracking people or phones, de-anonymising rotating Bluetooth addresses, covert recording, and any offensive radio use.
 
 ## Optional face matching (M-16, opt-in)
-Face recognition is in scope only as the optional add-on in [docs/FACE_MATCHING_MODULE_SPEC.md](docs/FACE_MATCHING_MODULE_SPEC.md) (ADR-0049, ADR-0050). Not built yet. The rules:
+Face recognition is in scope only as the optional add-on in [docs/FACE_MATCHING_MODULE_SPEC.md](docs/FACE_MATCHING_MODULE_SPEC.md) (ADR-0049, ADR-0050). Built in `oiris/modules/face_match/` (headless-tested, not yet run on real hardware). The rules:
 - **Off by default.** Turned on only after a plain-language warning: what it stores, and that the camera sees people who never agreed.
 - **Personal mode:** matches only people you enrolled. Their templates stay on the device, encrypted. Recording their consent is recommended (required where the law demands it).
 - **Research mode:** anonymous, unlinked counts of unrecognized faces only — no templates, no way to tell if the same stranger was seen twice. Unlocks on your own explicit opt-in; no legal review or external gate.

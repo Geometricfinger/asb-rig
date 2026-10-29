@@ -28,6 +28,8 @@ class Engine:
     results: list = field(default_factory=list)
     events: list = field(default_factory=list)
     on_event: Any = None
+    face_match: Any = None      # M-16 module when enabled (oiris.modules.face_match_gate.load); else None
+    face_place: str | None = None
 
     def __post_init__(self) -> None:
         c = self.config
@@ -57,6 +59,14 @@ class Engine:
 
     def step(self) -> dict:
         by_cap = self._collect()
+        if self.face_match is not None:
+            # M-16 consumes face frames off the bus. It returns counts only, writes to its own
+            # review log and never emits an event, alert or score (spec section 6).
+            for s in by_cap.get("face_frame", []):
+                try:
+                    self.face_match.process_frame(s.data, place=self.face_place)
+                except Exception as e:  # noqa: BLE001 - M-16 can never stop the loop
+                    log.error("face_match failed: %s", e)
         health = self.bus.health()
         scores: list[Score] = []
         for m in self.score_modules:

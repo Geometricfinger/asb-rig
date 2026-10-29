@@ -136,7 +136,7 @@ Legend: "Closed" = researched and cited; "Decision" = closed by a recorded defau
 | R-24 | Sweep timeline shows what is new since the previous sweep; records are tamper-evident. | E-28 |
 | R-25 | App opens only after strong biometric or device-credential unlock; keys are bound to that unlock. | E-29 |
 
-**Non-goals.** No face recognition or face templates; no identification of any person; no stored face crops; no strangers; no public spaces; no cloud services; no cellular, no monitor mode, no jamming, no transmit except IR LEDs and the Pi/phone's normal client radios; no medical readings; no claim that output identifies a robot; no use of the security features to hide wrongdoing or evade lawful requests.
+**Non-goals.** No face recognition or face templates *(amended 2026-10-29: except the optional, off-by-default M-16 face-matching add-on under ADR-0049/0050 and docs/FACE_MATCHING_MODULE_SPEC.md; this frozen v2 text is otherwise unchanged)*; no identification of any person; no stored face crops; no strangers; no public spaces; no cloud services; no cellular, no monitor mode, no jamming, no transmit except IR LEDs and the Pi/phone's normal client radios; no medical readings; no claim that output identifies a robot; no use of the security features to hide wrongdoing or evade lawful requests.
 
 **Standing rules.** Open-source only (no AGPL, no non-commercial licenses), clean temp files, never touch other projects, nothing purchased or sent without the owner's approval, **no paid GitHub Actions**.
 

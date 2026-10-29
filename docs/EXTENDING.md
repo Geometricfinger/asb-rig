@@ -24,6 +24,9 @@ Implement `name` (`S_*`), `inputs` (capabilities), `module_flag` (spec module or
 ## Add a model
 Ship a directory with `manifest.json` (C9: name, version, license, file, sha256, hypothesis, output_range `[0,1]`, data_tier) and the weights file. Load with `oiris.models.load_into(slot, path, loader)`. A bad hash, license or output range leaves the slot on its last-good model or disabled.
 
+## Add a face backend (M-16)
+Implement `FaceMatchPort` (`oiris/modules/face_match/port.py`: `detect`, `embed`, `compare`, `open`/`close`/`health`, plus `license`, `model_id`, `model_version`, `test_only`) and register it on port `face_match` v1.0 from an `oiris.plugins` entry point with `module_flag="M-16"`. Backends only compute: no storage, logging or export methods (a contract test checks). Weights and their training-data terms must be permissive and recorded in THIRD_PARTY.md; never commit weights.
+
 ## Add a TTS engine
 Implement `speak`, `stop` and `offline = True`. Network voices are rejected. GPL engines are not accepted.
 
@@ -34,4 +37,4 @@ UI reads C3 events and C4 logs only. Place it in a zone from the C6 map (`docs/s
 Append a new `(version, sql)` to `oiris/store/migrations.py`. Never edit a shipped migration.
 
 ## Disable a module
-Set `"flags": {"M-07": false}` in the config JSON. M-04 (security) and M-11 (bus) cannot be disabled.
+Set `"flags": {"M-07": false}` in the config JSON. M-04 (security) and M-11 (bus) cannot be disabled. M-16 is off by default; turn it on only with `oiris face-match enable` (typed opt-in) and off with `oiris face-match disable` (verified wipe).

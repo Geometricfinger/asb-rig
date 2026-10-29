@@ -1,6 +1,6 @@
 # O Iris — Face-Matching Module Spec (future add-on)
 
-- **Status:** Draft / proposal. Not built, not scheduled. Nothing here is in the code.
+- **Status:** Built (v0.2.0-dev, 2026-10-29) in `oiris/modules/face_match/`; see §18 for what is real and what is not. Headless-tested only; never run on real hardware or real faces.
 - **Proposed module ID:** M-16 `face_match` (optional, outside the M-01…M-15 core set)
 - **Date:** 2026-10-29
 - **Fits:** ports & adapters (`docs/ARCHITECTURE.md`), plugin registration (`docs/EXTENDING.md`), `ETHICS.md`, ADR-0013, ADR-0017, ADR-0021/0022, ADR-0024, ADR-0033, ADR-0039
@@ -24,7 +24,7 @@ These records conflicted with this add-on and have been updated:
 | ETHICS.md: face recognition out of scope | Now in scope only as opt-in M-16 under the rules in this spec. |
 | ADR-0013 (D-13): no public or stranger use in Phase 0–1 | Superseded by **ADR-0050**: personal mode allowed now; research mode unlocks on the user's own explicit opt-in alone, with no legal review or external gate. |
 
-Still to do when M-16 is built: `oiris/guard/privacy.py` currently rejects all face templates and must be narrowed to enrolled M-16 templates only. The frozen build spec v2 (`docs/spec/`) still lists face recognition as a non-goal; the ADRs above take precedence.
+Done with the M-16 build: `oiris/guard/privacy.py` now allows `face_template` only from source `M-16` while it is enabled and opted in; every other source, and any stranger face data (`face_embedding`, `face_id`, `face_hash`, `face_crop`), is refused. The build spec v2 non-goals now carve out M-16 as an optional add-on (amendment note in `docs/spec/ASB-Build-Spec-v2.md`).
 
 ## 3. Key design decision — what research mode can and cannot do
 
@@ -300,7 +300,8 @@ Test faces are synthetic or from consenting, permissively licensed datasets only
 
 - Detector and embedding weights **must be commercial-use OK under a permissive licence** (MIT, Apache-2.0, BSD). No non-commercial or research-only weights — this rules out many InsightFace model packs, whose weights are non-commercial even though the code is MIT. No GPL-family code in the adapter.
 - Licence of **weights and training data terms** checked separately from code, recorded in the C9 manifest (`license`, `data_tier`, `sha256`).
-- **Candidate models: TBD.** None has been licence-verified for this spec, so none is named. Verification is task one before any build.
+- **Chosen backend (`opencv_zoo`):** OpenCV Zoo YuNet detector (`face_detection_yunet_2023mar.onnx`, LICENSE file: MIT) + SFace embedder (`face_recognition_sface_2021dec.onnx`, LICENSE file: Apache-2.0), run through OpenCV (Apache-2.0). Licence files checked 2026-10-29 at github.com/opencv/opencv_zoo. Weights are **not** in the repo; `oiris face-match fetch-models` downloads them on explicit request and pins SHA-256. **Open item:** the SFace paper trains on public face datasets (CASIA-WebFace / VGGFace2 / MS1M family) whose own terms are research-oriented; the weights' Apache-2.0 grant does not settle the training-data terms. Recorded as `data_tier: unverified` in THIRD_PARTY.md; the owner decides before relying on it commercially.
+- **Test backend (`test_deterministic`):** dependency-free, works only on synthetic frames, labelled TEST-ONLY, never registered, refused unless `allow_test_backend` (tests only).
 
 ## 17. Open questions
 
@@ -312,3 +313,19 @@ Test faces are synthetic or from consenting, permissively licensed datasets only
 6. Does M-16 run on the glasses, the phone (ADR-0042), or both?
 7. Who signs off the superseding ADRs for D-17, D-13 and ETHICS.md?
 8. Should the opt-in expire and require re-confirmation (e.g. every 90 days)?
+
+## 18. Build status (2026-10-29)
+
+| Part | State |
+|---|---|
+| Opt-in (typed `I UNDERSTAND`, full warning v1, jurisdiction note, tamper-evident record), mode changes, disable | **Real**, tested (`optin.py`, `DbChain` / `HashChain`) |
+| Default off, not imported, no port instance while off | **Real**, tested in a clean subprocess (`face_match_gate.py`) |
+| EnrollmentPort: sessions, unlimited people, per-person buffers, 5 angles, 5–10 shots, quality checks (faces/size/light/blur/angle), consent + guardian, re-enroll, verified person delete | **Real**, tested (`core.py`, `quality.py`) |
+| Personal matching, research counts (no face data, no linking), review log, per-entry delete, retention, export block | **Real**, tested |
+| Encrypted storage (face key file + per-person DEKs + AEAD) and verified crypto-erase on disable | **Real**, tested |
+| Fault isolation (thread + timeout + breaker) | **Real**, tested with raise / hang / garbage / SystemExit backends |
+| Guided capture UI | **CLI** (`oiris face-match enroll`, ticks per angle, file or camera input). Android phone screen and glasses mini-guide: **not built** |
+| Real backend (`opencv_zoo`) | Code real; CI test skips without weights; detection/pose geometry checked locally with the real weights; never run on a real face in tests |
+| Dashboard review page | **Not built** (CLI `review` / `delete-entry` / `delete-person` only) |
+
+Open questions in §17 are unchanged; the build takes the conservative side (review log only, no live view; consent required by default; hourly buckets).

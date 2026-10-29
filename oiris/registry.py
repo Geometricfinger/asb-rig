@@ -9,7 +9,7 @@ from typing import Any, Callable
 
 log = logging.getLogger(__name__)
 
-PORT_VERSIONS = {"sensor": "1.0", "score": "1.0", "model": "1.0", "tts": "1.0", "store": "1.0"}
+PORT_VERSIONS = {"sensor": "1.0", "score": "1.0", "model": "1.0", "tts": "1.0", "store": "1.0", "face_match": "1.0"}
 ALLOWED_LICENSES = {"MIT", "BSD-2-Clause", "BSD-3-Clause", "Apache-2.0", "ISC", "PSF-2.0", "MPL-2.0"}
 
 
@@ -68,7 +68,9 @@ def default_registry() -> Registry:
     from .adapters import builtin
     from .scores import builtin as score_builtin
     r = Registry()
+    from .modules import face_match_gate
     builtin.register(r)
     score_builtin.register(r)
+    face_match_gate.register(r)
     r.load_entry_points()
     return r

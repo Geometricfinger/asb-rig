@@ -20,6 +20,14 @@ Policy (R-05): allowed MIT, BSD-2/3, Apache-2.0, ISC, PSF, MPL-2.0; LGPL only wi
 | gpiozero | BSD-3-Clause | IR LED gate |
 | picamera2 | BSD-2-Clause | Pi NoIR camera (Raspberry Pi OS package) |
 
+## M-16 face models (not in the repo; downloaded only by `oiris face-match fetch-models`)
+| File | Licence (file checked 2026-10-29) | SHA-256 | Data tier |
+|---|---|---|---|
+| opencv_zoo `face_detection_yunet_2023mar.onnx` (YuNet) | MIT (Shiqi Yu) | `8f2383e4…52fa4` | detector trained on WIDER FACE; terms unverified |
+| opencv_zoo `face_recognition_sface_2021dec.onnx` (SFace) | Apache-2.0 | `0ba9fbfa…c34e79` | **unverified**: paper trains on CASIA-WebFace / VGGFace2 / MS1M-family data with research-oriented terms; owner decision before commercial reliance |
+
+The test backend `oiris/modules/face_match/backends/test_deterministic.py` (Apache-2.0, this repo) is TEST-ONLY and uses synthetic frames. InsightFace/ArcFace model packs and FaceNet weights trained on VGGFace2/MS-Celeb are **not** used (non-commercial terms).
+
 ## Dev only
 pytest (MIT), hypothesis (MPL-2.0), ruff (MIT), mypy (MIT), pip-licenses (MIT).
 

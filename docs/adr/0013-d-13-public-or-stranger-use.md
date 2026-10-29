@@ -10,7 +10,7 @@ Never in Phase 0–1.
 
 ## Where it is enforced
 
-superseded by [ADR-0050](0050-stranger-use-face-match-modes.md); Hardware/process decision; documented only (no code path).
+superseded by [ADR-0050](0050-stranger-use-face-match-modes.md). Outside M-16 this stays a process decision; M-16 modes are enforced in `oiris/modules/face_match/` (built 2026-10-29).
 
 ## Changing it
 

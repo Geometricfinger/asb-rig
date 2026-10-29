@@ -3,6 +3,14 @@
 All notable changes. Format: Keep a Changelog; versioning: SemVer. Contracts C1–C9 are versioned separately (see docs/UPGRADING.md).
 
 ## [Unreleased]
+### Added
+- M-16 face matching (optional, off by default; ADR-0049/0050, docs/FACE_MATCHING_MODULE_SPEC.md): `oiris/modules/face_match/` (FaceMatchPort, module core, EnrollmentPort with unlimited enrollment and 5-angle guided capture, quality checks, personal matching, research-mode anonymous counts, review log with per-entry delete, retention, export block, verified crypto-erase on disable and person delete, fault-isolation supervisor), `face_match_gate.py` (lazy load), `oiris face-match` CLI, schema migration v4 (`fm_*` tables), `face_match` port v1.0, `M-16` flag (DEFAULT_OFF).
+- Backends: `opencv_zoo` (YuNet MIT + SFace Apache-2.0, weights fetched on request with pinned SHA-256) and a TEST-ONLY deterministic backend.
+- Tests: `tests/test_face_match.py`, M-16 fault injection and FaceMatchPort contract tests.
+### Changed
+- Privacy guard allows `face_template` only from the enabled, opted-in M-16 module; refuses stranger face data kinds.
+- Retention purge covers M-16 encounter logs and counts; engine routes `face_frame` samples to M-16 when loaded (no events, no scores).
+- Build spec v2 non-goals amended for the M-16 add-on; ADR-0013/0017/0049/0050, ETHICS.md, STATUS.md, EXTENDING.md, THIRD_PARTY.md updated.
 ### Docs
 - Face-matching add-on spec (M-16, not built): `docs/FACE_MATCHING_MODULE_SPEC.md`.
 - ADR-0049 supersedes ADR-0017 (enrolled-only encrypted face templates; verified wipe on disable).
