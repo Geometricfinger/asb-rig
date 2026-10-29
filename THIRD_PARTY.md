@@ -39,11 +39,11 @@ pytest (MIT), hypothesis (MPL-2.0), ruff (MIT), mypy (MIT), pip-licenses (MIT).
 |---|---|---|
 | iw | ISC | managed-mode Wi-Fi scan (passive policy enforced) |
 | rtl_power (rtl-sdr) | GPL-2.0 | receive-only E-10 probe |
-| cryptsetup (LUKS2) | GPL-2.0 | Pi data volume (set up by the operator) |
+| cryptsetup (LUKS2) | GPL-2.0 | Pi data volume (`scripts/pi_luks2_setup.sh` runs it as a separate executable) |
 | flite | BSD-style | Pi TTS |
 
 ## Android (see android/dependencies.txt)
-AndroidX core/fragment/biometric/camera/sqlite (Apache-2.0); SQLCipher for Android (BSD-3-Clause); Mapsforge (LGPL-3.0 with exception). Android SDK/Gradle are build-time tools only. No Google Play Services, ML Kit or Firebase.
+AndroidX core/fragment/biometric/camera (incl. camera-view)/sqlite (Apache-2.0); Bouncy Castle `bcprov-jdk18on` 1.78.1 (Bouncy Castle Licence, MIT-style: X25519, ChaCha20-Poly1305, BLAKE2s for the Kotlin Noise port); SQLCipher for Android (BSD-3-Clause); Mapsforge (LGPL-3.0 with exception). Android SDK/Gradle are build-time tools only. No Google Play Services, ML Kit or Firebase.
 
 ## Algorithms and data
 - rPPG: own implementation of the published POS method (Wang et al., 2017). Patent status **unverified**.

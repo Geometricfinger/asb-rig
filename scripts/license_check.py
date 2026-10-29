@@ -62,9 +62,12 @@ def check_android(path=Path("android/dependencies.txt")) -> list[str]:
     return bad
 
 
-def check_gradle_matches(gradle=Path("android/app/build.gradle.kts"), deps=Path("android/dependencies.txt")) -> list[str]:
+def check_gradle_matches(gradles=(Path("android/app/build.gradle.kts"), Path("android/core/build.gradle.kts")),
+                         deps=Path("android/dependencies.txt")) -> list[str]:
     listed = {ln.split("|")[0].strip() for ln in deps.read_text().splitlines() if ln.strip() and not ln.startswith("#")}
-    used = set(re.findall(r'"([\w.\-]+:[\w.\-]+):[\w.\-]+"', gradle.read_text()))
+    used: set[str] = set()
+    for gradle in gradles:
+        used |= set(re.findall(r'"([\w.\-]+:[\w.\-]+):[\w.\-]+"', gradle.read_text()))
     missing = used - listed
     return [f"{m}: used in Gradle but not license-listed" for m in sorted(missing)]
 

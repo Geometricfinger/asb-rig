@@ -67,6 +67,8 @@ Families: optical, thermal, rf, vital, eye_liveness, voice. Signatures A1–A11 
 | M-10 One-commit build | `scripts/build_all.sh`, `.github/workflows/ci.yml` |
 | M-11 Sensor bus / adapters | `bus.py`, `adapters/*`, `registry.py` |
 | M-12 Feedback loop | `modules/golden.FeedbackLoop` |
-| M-13 Android fallback node | `android/.../FallbackNode.kt`, `adapters/drivers.AndroidBridgeAdapter` |
+| M-13 Android fallback node | `android/.../FallbackNode.kt`, `GlintCamera.kt`, `adapters/drivers.AndroidBridgeAdapter` |
+| Phone link (M-04) | `oiris/security/channel.py` ↔ `android/core/.../Noise.kt` (shared vectors `tests/vectors/`); M-16 EnrollmentPort over it: `face_match/remote.py` ↔ `core/.../Enrollment.kt` |
+| UI (module 2) | `oiris/ui/` (C7 tokens, simulated glasses), `oiris/dashboard/` (D1–D6, `/face`), Android activities |
 | M-14 Sweep timeline | `store/sightings.SweepTimeline` |
 | M-15 App gate | `android/.../Gate.kt`, `modules/appgate.py` |

@@ -5,4 +5,23 @@
     <string name="research_notice">Research tool. Signatures are observations with benign causes, never an identity.</string>
     <string name="osm_attribution">© OpenStreetMap contributors</string>
     <string name="not_medical">Not a medical measurement</string>
+    <string name="map_missing">No offline map yet. Copy an OpenStreetMap .map file into Android/data/org.oiris.app/files/maps/ (the app never downloads).</string>
+    <string name="map_no_pins">no sightings with a location yet</string>
+    <string name="pod_not_connected">Pod not connected. Face enrollment runs on the paired pod; connect it first.</string>
+    <string name="fm_title">Face match (optional, off by default)</string>
+    <string name="fm_locked">Face matching is off. Nothing is captured or matched.</string>
+    <string name="fm_read_warning">Read the warning to turn it on</string>
+    <string name="fm_warning_heading">Read this before turning face matching on</string>
+    <string name="fm_type_phrase">Type I UNDERSTAND</string>
+    <string name="fm_turn_on">Turn on face matching</string>
+    <string name="fm_ready">Enroll a person who agreed. No limit on how many.</string>
+    <string name="fm_name_hint">Name or label (for example Mom, Alex, Coach)</string>
+    <string name="fm_consent_hint">Consent record ID</string>
+    <string name="fm_guardian">A parent or guardian is enrolling a minor</string>
+    <string name="fm_start_person">Start guided capture</string>
+    <string name="fm_capture">Capture this angle</string>
+    <string name="fm_finish">Finish this person</string>
+    <string name="fm_no_frame">Camera not ready yet</string>
+    <string name="tab_map">Map</string>
+    <string name="tab_enroll">Face match</string>
 </resources>

@@ -1,0 +1,51 @@
+{
+ "protocol": "Noise_XX_25519_ChaChaPoly_BLAKE2s",
+ "prologue": "",
+ "init_static": "0101010101010101010101010101010101010101010101010101010101010101",
+ "resp_static": "0202020202020202020202020202020202020202020202020202020202020202",
+ "init_ephemeral": "0303030303030303030303030303030303030303030303030303030303030303",
+ "resp_ephemeral": "0404040404040404040404040404040404040404040404040404040404040404",
+ "init_static_pub": "a4e09292b651c278b9772c569f5fa9bb13d906b46ab68c9df9dc2b4409f8a209",
+ "resp_static_pub": "ce8d3ad1ccb633ec7b70c17814a5c76ecd029685050d344745ba05870e587d59",
+ "init_fingerprint": "7f4d11c910cd78f5dc183b6534a894dc",
+ "resp_fingerprint": "3bf07da617d16c60620895c7a502853b",
+ "handshake": [
+  "5dfedd3b6bd47f6fa28ee15d969d5bb0ea53774d488bdaf9df1c6e0124b3ef22",
+  "ac01b2209e86354fb853237b5de0f4fab13c7fcbf433a61c019369617fecf10ba008df889bb35e8223335723afaf9154defd8da5df240cc3592090c2fb4518e0f8a9c8eb8aaf10306458cc0427473cff00d08b16e09f17e87922e2c3141f51c3",
+  "b7cdf8c991735a27cbc64fb59293bea96330d41179052f565b352ffad9b79b8756111467ed9f79fa5e030d2860269ed1466373393f58398c4d6e99d383b65668"
+ ],
+ "handshake_hash": "d82bdcd4babcc27d41ff28820df5d70ff34e422464c7c2f9e9ea69db5c744ef9",
+ "transport": [
+  {
+   "dir": "i2r",
+   "gen": 0,
+   "plain": "hello pod",
+   "cipher": "080be14783ada3235f53fbfd23d46ead02e8c9de74979988a4"
+  },
+  {
+   "dir": "i2r",
+   "gen": 0,
+   "plain": "C3 event",
+   "cipher": "a92f43f98fe66f97ecbeb1b828299b61e290940b028e7f89"
+  },
+  {
+   "dir": "i2r",
+   "gen": 0,
+   "plain": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "cipher": "0e93c7f22a9c1ef709f32199082e25c20f1e06acedc2222cb34202e0c142fce796b49fdee947d295c67b461d9b8c30cfc20102653d89bd3280371b94d55dc9fcb7b6ace3d04bbcbfe268555d404262e547f689886b5e2205586a86304eaf079905c613d9964b5c888a5752e9c8d04b704a0c3f06"
+  },
+  {
+   "dir": "i2r",
+   "gen": 1,
+   "plain": "after rekey",
+   "cipher": "65187ca23376319ca741c6600d1f0c570081ce55785b7498136dc7"
+  },
+  {
+   "dir": "r2i",
+   "gen": 0,
+   "plain": "reply",
+   "cipher": "3fbc22ced2ab874d5c1a0cb517402780da01f5a22f"
+  }
+ ],
+ "framing": "SecureChannel frame = 4-byte big-endian rekey generation || Noise transport ciphertext"
+}

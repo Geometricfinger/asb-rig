@@ -56,3 +56,4 @@ One ADR per settled default from the v2 spec decision log (D-xx), plus project A
 | [ADR-0050](0050-stranger-use-face-match-modes.md) | D-13 | Public or stranger use: face-match modes (supersedes D-13) | Accepted |
 | [ADR-0051](0051-live-eye-roi-dark-pupil.md) | M-01 | Live eye ROI: dark-pupil + glint, landmarks when available | Accepted |
 | [ADR-0052](0052-c7-tokens-and-simulated-glasses.md) | C7/G | Design tokens v0.1 and simulated glasses renderer | Accepted |
+| [ADR-0053](0053-kotlin-noise-port-and-phone-enrollment.md) | M-04/M-16 | Kotlin Noise port, phone enrollment over the link, JVM checks | Accepted |

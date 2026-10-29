@@ -1,0 +1,13 @@
+{
+ "note": "Canonical request strings. Kotlin EnrollmentProtocol must produce these byte-for-byte; the Python EnrollmentServer must accept them.",
+ "requests": {
+  "status": "{\"op\":\"status\"}",
+  "warning": "{\"jurisdiction\":\"us-other\",\"op\":\"warning\"}",
+  "start_session": "{\"op\":\"start_session\"}",
+  "add_person": "{\"consent_id\":\"c-ok\",\"guardian\":false,\"label\":\"Alex\",\"op\":\"add_person\",\"session\":\"S\"}",
+  "add_person_no_consent": "{\"consent_id\":null,\"guardian\":false,\"label\":\"Mom \\u00e9\",\"op\":\"add_person\",\"session\":\"S\"}",
+  "shot": "{\"angle\":\"left\",\"fmt\":\"bgr\",\"h\":1,\"op\":\"shot\",\"person\":\"P\",\"pixels_b64\":\"AQIDBAUG\",\"w\":2}",
+  "finish": "{\"op\":\"finish\",\"person\":\"P\"}",
+  "end_session": "{\"op\":\"end_session\",\"session\":\"S\"}"
+ }
+}

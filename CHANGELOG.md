@@ -4,6 +4,7 @@ All notable changes. Format: Keep a Changelog; versioning: SemVer. Contracts C1�
 
 ## [Unreleased]
 ### Added
+- Android: Kotlin Noise_XX port + SecureChannel + fragments in new pure-Kotlin module `android/core` (byte-identical to Python on shared vectors `tests/vectors/`), M-16 guided enrollment screen (`EnrollmentActivity`, typed opt-in, 5-angle checklist, no limit), offline Mapsforge map (`MapActivity`), CameraX glint capture (`GlintCamera`), C7 alert visuals + haptics (`AlertUi`); `:core:check` JVM checks run in CI. Pod side: EnrollmentPort over the link (`oiris/modules/face_match/remote.py`), `security.channel.fragment`/`Reassembler`; ADR-0053. Tests: `tests/test_phone_link.py`.
 - Unsigned macOS `O Iris.app` bundle in the CI artifact (`scripts/make_macos_app.py`, offline bundled wheels for Python 3.11–3.13); signing steps in docs/MACOS.md. Tests: `tests/test_macos_app.py`.
 - Synthetic seed golden set `golden/synthetic/` (5 simulator clips, frozen manifest, expectations) + `scripts/make_synthetic_golden.py` (`--check` in CI); real-data procedure in golden/README.md. Tests: `tests/test_synthetic_golden.py`.
 - C7 design tokens v0.1 + validator (`oiris/ui/tokens.py`) and simulated glasses display G1–G6 (`oiris/ui/glasses.py`, `oiris glasses-sim`); ADR-0052. Tests: `tests/test_ui_glasses.py`.

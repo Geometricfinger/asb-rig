@@ -17,11 +17,20 @@ Version 0.1.0. "Real" = implemented and unit-tested headless. "Untested on hardw
 | Eye ROI detection (live frames) | **Real**, tested on synthetic NIR frames: dark-pupil + glint detector or landmark crop (`features/eye_roi.py`, ADR-0051), `EyeTracker` → `eye` sample, `camera_noir_eye` adapter. **Untested on hardware**; thresholds need tuning on the real camera |
 | Speaker embedding (ECAPA) and anti-spoof (AASIST) models | **Not included** (data terms unverified). `S_voice` takes a spoof score from the model port |
 | Android app: gate, Keystore wrap, SQLCipher store, panic, offline TTS, fallback node logic, zones | **Real source; builds in CI only** (no device testing yet) |
-| Android Noise channel | **Stub**: not yet implemented in Kotlin (noise-java is not on Maven Central; needs vendoring or a Kotlin port) |
-| Android map screen (Mapsforge) | Dependency wired, attribution shown; **map view not yet implemented** |
-| Android CameraX glint capture | Scoring logic present; **camera pipeline not yet wired** |
+| Android Noise channel | **Real** Kotlin port (`android/core`, Bouncy Castle primitives): Noise_XX_25519_ChaChaPoly_BLAKE2s, pairing fingerprint check, rekey generations, fragmentation; **byte-identical to the Python pod** on shared vectors (`tests/vectors/noise_xx.json`, checked on both sides). The BLE GATT transport (pod GATT server + phone client) is **not built**: needs the pod hardware |
+| Android map screen (Mapsforge) | **Real** `MapActivity`: offline `.map` file from app storage, sighting pins from the encrypted store, attribution; builds in CI, **never run on a device** |
+| Android CameraX glint capture | **Wired** (`GlintCamera`: ImageAnalysis + torch on alternate frames → `FallbackNode.glintScore`); builds in CI, **never run on a device** |
 | Dashboard | Zones D1–D6 (headless data, 127.0.0.1 only) plus **real, tested** M-16 review page `/face` (browse, delete entry/person, disable+wipe, enrollment guide). D3/D4 remain text panels |
 | Glasses display (G zones) | **Real renderer in simulation** (`oiris/ui/glasses.py`, SVG, G1–G6, tested; `oiris glasses-sim`). No glasses hardware: real-display validation is Phase 2 after gate G1 |
 | Design tokens (C7) | **v0.1 DEFAULT** (`oiris/ui/design_tokens.json`, rules enforced by `tokens.validate`, ADR-0052); Design review may refine |
-| M-16 face matching (optional, off by default) | **Real** core, tested headless with a test-only synthetic backend: opt-in, enrollment (unlimited people), matching, research counts, review log, verified wipe, fault isolation. Real OpenCV Zoo backend: weights downloaded on request, **never run on a real face in tests**. Guided capture UI: CLI only (Android/glasses screens not built) |
+| M-16 face matching (optional, off by default) | **Real** core, tested headless with a test-only synthetic backend: opt-in, enrollment (unlimited people), matching, research counts, review log, verified wipe, fault isolation. Real OpenCV Zoo backend: weights downloaded on request, **never run on a real face in tests**. Guided capture UI: CLI, and the Android M-16 enrollment screen (`EnrollmentActivity` + JVM-checked `EnrollmentFlow`; talks to the pod's EnrollmentPort over the Noise link, `face_match/remote.py`). Dashboard review page built. Glasses mini-guide not built |
 | macOS artifact | Wheel + self-test tarball + **unsigned `O Iris.app`** zip (offline wheels, launches the local dashboard; `scripts/make_macos_app.py`, structure tested). Signing/notarization needs a paid Apple Developer ID: steps in docs/MACOS.md, **not done** |
+| Android alert visuals | **Real**: C7 tokens packaged as an asset; shape + "signal" word + colour cue + per-level haptic (`AlertUi`, `org.oiris.core.AlertVisuals`, JVM-checked) |
+| Android JVM checks | `gradle :core:check` runs `jvmChecks` (216 checks: Noise vectors, channel, fragments, protocol strings, enrollment flow incl. 12 people in one session, alert visuals). Self-contained harness, no test-framework dependency |
+
+## Needs hardware or real people (not done; not faked)
+- Real-device validation: Pi rig sensors, NoIR eye path thresholds, Android app on a phone, BLE GATT pod↔phone transport, glasses display brightness/legibility.
+- Trained fusion weights: need real golden data (hand-set prior until then).
+- Real-subject tests: E-11/E-13/E-14 eye experiments, face matching on real faces (M-16 has only run on synthetic frames).
+- Code signing/notarization: needs a paid Apple Developer ID (steps in docs/MACOS.md); Android release signing is the user's own key.
+- Voice speaker-ID (ECAPA) and anti-spoof (AASIST): no weights found whose **training data** terms are verifiably commercial-OK (public checkpoints are trained on VoxCeleb / ASVspoof, whose data terms are research/non-commercial). The model port stays pluggable; nothing shipped.

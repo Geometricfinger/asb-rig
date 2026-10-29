@@ -324,8 +324,8 @@ Test faces are synthetic or from consenting, permissively licensed datasets only
 | Personal matching, research counts (no face data, no linking), review log, per-entry delete, retention, export block | **Real**, tested |
 | Encrypted storage (face key file + per-person DEKs + AEAD) and verified crypto-erase on disable | **Real**, tested |
 | Fault isolation (thread + timeout + breaker) | **Real**, tested with raise / hang / garbage / SystemExit backends |
-| Guided capture UI | **CLI** (`oiris face-match enroll`, ticks per angle, file or camera input). Android phone screen and glasses mini-guide: **not built** |
+| Guided capture UI | **CLI** (`oiris face-match enroll`) and **Android screen** (`EnrollmentActivity`, EnrollmentPort over the Noise link via `remote.py`; flow JVM-checked, never run on a phone). Glasses mini-guide: **not built** |
 | Real backend (`opencv_zoo`) | Code real; CI test skips without weights; detection/pose geometry checked locally with the real weights; never run on a real face in tests |
-| Dashboard review page | **Not built** (CLI `review` / `delete-entry` / `delete-person` only) |
+| Dashboard review page | **Real**, tested (`oiris/dashboard/face.py`: browse, delete entry/person, disable+wipe, enrollment guide) |
 
 Open questions in §17 are unchanged; the build takes the conservative side (review log only, no live view; consent required by default; hourly buckets).

@@ -25,10 +25,21 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions { jvmTarget = "17" }
-    sourceSets["main"].assets.srcDirs("src/main/assets", "../../schema")
+    sourceSets["main"].assets.srcDirs("src/main/assets", "../../schema", layout.buildDirectory.dir("generated/tokens"))
+    packaging { resources.excludes += setOf("META-INF/versions/9/OSGI-INF/MANIFEST.MF") }
 }
 
+// C7 design tokens are owned by oiris/ui; copy the one JSON file into the APK assets.
+val copyTokens by tasks.registering(Copy::class) {
+    from("../../oiris/ui/design_tokens.json")
+    into(layout.buildDirectory.dir("generated/tokens"))
+}
+tasks.named("preBuild") { dependsOn(copyTokens) }
+
 dependencies {
+    implementation(project(":core"))
+    implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
+    implementation("androidx.camera:camera-view:1.3.4")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.fragment:fragment-ktx:1.8.2")
     implementation("androidx.biometric:biometric:1.1.0")

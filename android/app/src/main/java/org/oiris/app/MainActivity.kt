@@ -1,9 +1,13 @@
 package org.oiris.app
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.WindowManager
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
@@ -18,12 +22,15 @@ class MainActivity : FragmentActivity() {
     private lateinit var status: TextView
     private lateinit var alert: TextView
     private val panic = Panic { lock() }
+    private lateinit var alerts: AlertUi
+    private var glint: GlintCamera? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
         vocab = Vocabulary.load(this)
         vault = KeyVault(this)
+        alerts = AlertUi(this)
         val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(32, 48, 32, 32) }
         status = TextView(this).apply { text = "P1 · Locked · build ${BuildConfig.COMMIT}"; textSize = 14f }
         alert = TextView(this).apply { text = "P2 · No signatures"; textSize = 20f }
@@ -31,23 +38,48 @@ class MainActivity : FragmentActivity() {
         val voice = TextView(this).apply { text = "P4 · Voice: offline tiers (FYI haptic, Attention, Confirmed)" }
         val tabs = TextView(this).apply { text = "P5 · Map (${getString(R.string.osm_attribution)}) · Timeline · Review" }
         val notice = TextView(this).apply { text = getString(R.string.research_notice); setTextColor(Color.GRAY) }
-        listOf(status, alert, thermal, voice, tabs, notice).forEach(root::addView)
+        val mapBtn = Button(this).apply { text = getString(R.string.tab_map); minHeight = 144
+            setOnClickListener { startActivity(Intent(this@MainActivity, MapActivity::class.java)) } }
+        val fmBtn = Button(this).apply { text = getString(R.string.tab_enroll); minHeight = 144
+            setOnClickListener { startActivity(Intent(this@MainActivity, EnrollmentActivity::class.java)) } }
+        val nodeBtn = Button(this).apply { text = "Fallback node: camera glint"; minHeight = 144
+            setOnClickListener { startFallbackNode() } }
+        listOf(status, alert, thermal, voice, tabs, mapBtn, fmBtn, nodeBtn, notice).forEach(root::addView)
         setContentView(root)
-        Gate(this, vault) { key -> store = SightingStore(this, key); status.text = "P1 · Unlocked" }.prompt()
+        unlock()
     }
 
+    private fun unlock() {
+        Gate(this, vault) { key -> store = SightingStore(this, key).also { SessionKeys.store = it }; status.text = "P1 · Unlocked" }.prompt()
+    }
+
+    /** P2 alert: shape + "signal" word from the C7 tokens, colour as a redundant cue, level haptic. */
     fun show(result: Fusion.Result) {
-        val shape = when (result.level) { Level.CONFIRMED -> "■"; Level.ATTENTION -> "▲"; Level.FYI -> "●"; null -> "–" }
-        val word = result.level?.name ?: "none"
-        alert.text = vocab.check("P2 · $shape $word · families: ${result.active.joinToString()}" +
+        val v = alerts.forEngine(result.level?.name?.lowercase())
+        if (v == null) { alert.text = "P2 · No signatures"; alert.setTextColor(Color.LTGRAY); return }
+        alert.text = vocab.check("P2 · " + v.line("families: ${result.active.joinToString()}") +
             if (result.advisory) " · advisory (fallback node)" else "")
+        alert.setTextColor(v.argb.toInt())
+        alerts.haptic(v)
+    }
+
+    private fun startFallbackNode() {
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.CAMERA), 7); return
+        }
+        if (glint != null) return
+        val node = FallbackNode(this) { scores -> runOnUiThread { show(Fusion.fuse(scores, fallbackNode = true)) } }
+        glint = GlintCamera(this, node).also { it.start(this) }
+        node.startBle()
     }
 
     private fun lock() {
         store = null
+        SessionKeys.store = null
+        glint?.stop(); glint = null
         status.text = "P1 · Locked"
         alert.text = "P2 · —"
-        Gate(this, vault) { key -> store = SightingStore(this, key); status.text = "P1 · Unlocked" }.prompt()
+        unlock()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {

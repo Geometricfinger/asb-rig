@@ -106,3 +106,33 @@ class SecureChannel:
 def pub_from_priv(priv: bytes) -> bytes:
     return X25519PrivateKey.from_private_bytes(priv).public_key().public_bytes(
         serialization.Encoding.Raw, serialization.PublicFormat.Raw)
+
+
+# ---- application messages larger than one Noise frame (65,535 bytes) --------------------
+CHUNK = 60_000
+MAX_MESSAGE = 8 * 1024 * 1024
+
+
+def fragment(ch: SecureChannel, data: bytes) -> list[bytes]:
+    """Split one application message into encrypted frames; plaintext = 1 flag byte (1 = more) || chunk."""
+    if len(data) > MAX_MESSAGE:
+        raise ChannelError("message too large")
+    parts = [data[i:i + CHUNK] for i in range(0, len(data), CHUNK)] or [b""]
+    return [ch.encrypt((b"\x01" if k < len(parts) - 1 else b"\x00") + p) for k, p in enumerate(parts)]
+
+
+class Reassembler:
+    def __init__(self, ch: SecureChannel):
+        self.ch, self.buf = ch, bytearray()
+
+    def feed(self, frame: bytes) -> bytes | None:
+        pt = self.ch.decrypt(frame)
+        if not pt or pt[0] not in (0, 1):
+            self.buf.clear(); raise ChannelError("bad fragment flag")
+        self.buf += pt[1:]
+        if len(self.buf) > MAX_MESSAGE:
+            self.buf.clear(); raise ChannelError("message too large")
+        if pt[0] == 1:
+            return None
+        out = bytes(self.buf); self.buf.clear()
+        return out

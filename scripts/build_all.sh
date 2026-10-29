@@ -12,7 +12,7 @@ OUT=dist/$COMMIT
 mkdir -p "$OUT"
 
 # 1) Android APK (unsigned release + debug for install testing)
-( cd android && gradle --no-daemon assembleDebug assembleRelease )
+( cd android && gradle --no-daemon :core:check assembleDebug assembleRelease )   # :core:check = JVM checks vs shared vectors
 cp android/app/build/outputs/apk/debug/app-debug.apk "$OUT/o-iris-$COMMIT-debug.apk"
 cp android/app/build/outputs/apk/release/app-release-unsigned.apk "$OUT/o-iris-$COMMIT-release-unsigned.apk"
 
