@@ -38,5 +38,10 @@ MIGRATIONS: list[tuple[int, str]] = [
     CREATE TABLE fm_unrecognized_count(place_tag TEXT, place BLOB, date TEXT, time_bucket INTEGER, count INTEGER, expires_at REAL,
         PRIMARY KEY(place_tag, date, time_bucket));
     """),
+    # Consent registry state (grants, withdrawals, expiry) so a withdrawal survives restart.
+    # body is sealed with the DB key (AES-GCM, AAD bound to the consent ID).
+    (5, """
+    CREATE TABLE consent_record(consent_id TEXT PRIMARY KEY, body BLOB NOT NULL, updated_utc REAL);
+    """),
 ]
 LATEST = MIGRATIONS[-1][0]

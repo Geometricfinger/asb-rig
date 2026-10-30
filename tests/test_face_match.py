@@ -457,6 +457,7 @@ def test_cli_optin_enroll_review_disable(tmp_path, monkeypatch):
     assert cfg2.data_dir == str(tmp_path)
     out.clear()
     assert run(a("status"), cfg2, cfgp, out=out.append) == 0 and '"opted_in": true' in out[0]
+    assert json.loads(out[0])["consent_review"] == []
     assert run(a("disable"), cfg2, cfgp, out=out.append) == 0
     assert "0 templates destroyed, verified" in out[-1]
     assert json.loads(cfgp.read_text())["flags"]["M-16"] is False
@@ -551,3 +552,62 @@ def test_f3_expired_consent_template_purged_on_load(env):
     env["consents"]._r["c-exp"].expires_utc = 1.0
     assert m.process_frame(synth_face_frame(55), place="P")["matched"] == 0
     assert env["db"].execute("SELECT COUNT(*) FROM fm_enrolled WHERE person_id=?", (a,)).fetchone()[0] == 0
+
+
+# ---- F3 follow-up: consent state persists in the encrypted store ---------------------------
+def _durable_module(env, consents):
+    c = FaceMatchConfig(modes=["personal"], allow_test_backend=True)
+    return FaceMatchModule(env["db"], env["ks"], env["dir"], TestDeterministicBackend(), env["chain"], c, consents,
+                           timeout_s=1.0, breaker_threshold=3, breaker_cooldown_s=60)
+
+
+def test_f3_consent_withdrawal_survives_restart_and_purges_on_load(env):
+    opt_in(env)
+    reg = ConsentRegistry(env["db"])
+    reg.add(ConsentRecord("c-dur", "s5", {"face_enrollment"}))
+    reg.add(ConsentRecord("c-ok", "s1", {"face_enrollment"}))
+    m = _durable_module(env, reg)
+    sid = m.start_session(); a = enroll(m, sid, 44, "A", consent="c-dur"); b = enroll(m, sid, 45, "B"); m.end_session(sid)
+    old_tpl = env["db"].execute("SELECT template FROM fm_enrolled WHERE person_id=?", (a,)).fetchone()[0]
+    del m                                                    # "process stops"
+    # withdrawal recorded while the face module is not running (no hook attached)
+    ConsentRegistry(env["db"]).withdraw("c-dur")
+    # restart: a fresh registry loads grants/withdrawals from the store
+    reg2 = ConsentRegistry(env["db"])
+    assert reg2._r["c-dur"].withdrawn and reg2._r["c-dur"].scopes == {"face_enrollment"}
+    m2 = _durable_module(env, reg2)
+    assert env["db"].execute("SELECT COUNT(*) FROM fm_enrolled WHERE person_id=?", (a,)).fetchone()[0] == 0
+    assert not m2._can_open_with_any(old_tpl, b"tpl:" + a.encode())
+    assert m2.consent_review()["withdrawn_purged"] == 1
+    assert env["chain"].entries[-1][0]["kind"] == "consent_withdrawn"
+    assert m2.process_frame(synth_face_frame(44), place="P")["matched"] == 0
+    assert {r[0] for r in env["db"].execute("SELECT person_id FROM fm_enrolled")} == {b}
+
+
+def test_f3_consent_expiry_persists(env):
+    reg = ConsentRegistry(env["db"])
+    reg.add(ConsentRecord("c-e", "s6", {"face_enrollment"}, expires_utc=123.0))
+    r2 = ConsentRegistry(env["db"])
+    assert r2._r["c-e"].expires_utc == 123.0 and not r2._r["c-e"].withdrawn
+    with pytest.raises(ConsentError):
+        r2.require("c-e", "face_enrollment", now=200.0)
+
+
+def test_f3_consent_store_is_encrypted(env):
+    ConsentRegistry(env["db"]).add(ConsentRecord("c-enc", "subject-XYZ", {"face_enrollment"}))
+    env["db"].commit()
+    raw = Path(env["db"].path).read_bytes()
+    assert b"subject-XYZ" not in raw
+
+
+def test_f3_unknown_consent_kept_and_flagged_missing(env):
+    opt_in(env)
+    reg = ConsentRegistry(env["db"])
+    reg.add(ConsentRecord("c-gone", "s4", {"face_enrollment"}))
+    m = _durable_module(env, reg)
+    sid = m.start_session(); a = enroll(m, sid, 33, "A", consent="c-gone"); m.end_session(sid)
+    env["db"].execute("DELETE FROM consent_record WHERE consent_id=?", ("c-gone",))   # record lost
+    m2 = _durable_module(env, ConsentRegistry(env["db"]))
+    assert env["db"].execute("SELECT COUNT(*) FROM fm_enrolled WHERE person_id=?", (a,)).fetchone()[0] == 1
+    rev = m2.consent_review()
+    assert rev["missing"] == [{"person_id": a, "consent_id": "c-gone", "status": "consent record missing"}]

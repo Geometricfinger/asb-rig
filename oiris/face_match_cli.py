@@ -60,8 +60,9 @@ def run(a, cfg: Config, cfg_path: Path, inp: Callable[[str], str] = input, out=p
     try:
         if sub == "status":
             rec = optin.opt_in_record(db)
+            from .modules.face_match.core import consent_review_db
             out(json.dumps({"flag_on": cfg.enabled("M-16"), "opted_in": rec is not None, "opt_in": rec,
-                            "log_entries": chain.verify()}, indent=1))
+                            "log_entries": chain.verify(), "consent_review": consent_review_db(db)}, indent=1))
             return 0
         if sub == "enable":
             modes = a.mode or ["personal"]

@@ -3,6 +3,8 @@
 All notable changes. Format: Keep a Changelog; versioning: SemVer. Contracts C1–C9 are versioned separately (see docs/UPGRADING.md).
 
 ## [Unreleased]
+### Fixed (F3 follow-up: durable consent)
+- `ConsentRegistry(db)` persists grants, withdrawals and expiry in the encrypted store (migration v5 `consent_record`, body sealed with the DB key, AAD bound to the consent ID); withdrawal is written before hooks run. M-16 uses the durable registry by default and, on load, crypto-erases (verified, `consent_withdrawn` logged) templates whose consent is withdrawn or expired. Templates with an unknown consent ID are kept and listed as "consent record missing" in `FaceMatchModule.consent_review()` and `oiris face-match status` (`consent_review`). Tests: `test_f3_consent_withdrawal_survives_restart_and_purges_on_load`, `test_f3_consent_expiry_persists`, `test_f3_consent_store_is_encrypted`, `test_f3_unknown_consent_kept_and_flagged_missing`.
 ### Fixed (Forge static review, each reproduced first by a failing test in `tests/test_forge_review.py` / `tests/test_face_match.py::test_f3_*`)
 - F1 engine: cached sensor readings now expire after `sensor_max_age_s` (default 5 s, validated > 0); stale readings are not scored (so cannot drive alerts) and the adapter's reported health drops from OK to DEGRADED ("stale: ...").
 - F2 bus: at most one in-flight `read()` thread per adapter; while a timed-out read is still running no new thread is spawned, the adapter is reported "hung" (counts toward the circuit breaker), and after `adapter_hung_disable_s` (default 30 s) it is FAILED/"disabled" until the driver returns, then restarted.

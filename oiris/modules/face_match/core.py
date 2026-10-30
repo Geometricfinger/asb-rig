@@ -133,7 +133,7 @@ class FaceMatchModule:
         self.db, self.keys, self.chain, self.clock = db, keys, chain, clock
         db.execute("PRAGMA secure_delete=ON")   # deleted rows are zeroed in the file, not just unlinked
         self.data_dir = Path(data_dir).expanduser()
-        self.consents = consents or ConsentRegistry()
+        self.consents = consents if consents is not None else ConsentRegistry(db)   # durable by default
         rec = opt_in_record(db)
         if rec is None:
             raise FaceMatchLocked("M-16 is off or not opted in; enable it with the typed opt-in first")
@@ -150,6 +150,8 @@ class FaceMatchModule:
         self._templates: list[Template] | None = None
         self._tpl_consent: dict[str, str | None] = {}
         self.consents.withdraw_hooks.append(self._on_consent_withdrawn)
+        self._withdrawn_purged = 0
+        self._purge_revoked()   # load-time: templates whose (persisted) consent is withdrawn/expired are erased
         self.stats = {"frames": 0, "matched": 0, "unrecognized": 0, "faces": 0}
 
     # ---- keys --------------------------------------------------------------------------
@@ -179,7 +181,7 @@ class FaceMatchModule:
         the registry is not persisted, so absence is not evidence of withdrawal."""
         if not consent_id:
             return False
-        rec = self.consents._r.get(consent_id)
+        rec = self.consents.get(consent_id)
         if rec is None:
             return False
         try:
@@ -194,7 +196,15 @@ class FaceMatchModule:
         for pid in gone:
             rep = self.delete_person(pid)   # same crypto-erase + verification path as a user deletion
             log_change(self.db, self.chain, "consent_withdrawn", {"templates_destroyed": 1, "verified": rep.verified})
+        self._withdrawn_purged += len(gone)
         return len(gone)
+
+    def consent_review(self) -> dict:
+        """Templates whose consent ID has no record here are kept but listed for review."""
+        missing = [{"person_id": pid, "consent_id": cid, "status": "consent record missing"}
+                   for pid, cid in self.db.execute("SELECT person_id, consent_id FROM fm_enrolled ORDER BY enrolled_at")
+                   if cid and not self.consents.known(cid)]
+        return {"missing": missing, "withdrawn_purged": self._withdrawn_purged}
 
     def _on_consent_withdrawn(self, consent_id: str) -> None:
         try:
@@ -609,3 +619,11 @@ def disabled_wipe_without_module(db, data_dir: str | Path) -> int:
 
 __all__ = ["FaceMatchModule", "FaceMatchConfig", "FaceMatchLocked", "ExportBlocked", "ShotResult", "WipeReport",
            "OptInError", "purge"]
+
+
+def consent_review_db(db) -> list[dict]:
+    """Status helper without loading templates: enrolled people whose consent record is missing."""
+    known = {r[0] for r in db.execute("SELECT consent_id FROM consent_record")}
+    return [{"person_id": pid, "consent_id": cid, "status": "consent record missing"}
+            for pid, cid in db.execute("SELECT person_id, consent_id FROM fm_enrolled ORDER BY enrolled_at")
+            if cid and cid not in known]
