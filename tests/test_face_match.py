@@ -514,3 +514,40 @@ def test_model_fetch_rejects_bad_checksum(tmp_path):
     with pytest.raises(ModelMissing):
         fetch_models(tmp_path, opener=lambda url: io.BytesIO(b"not the model"))
     assert not models_present(tmp_path) and not list(tmp_path.glob("*.onnx")) and not list(tmp_path.glob("*.part"))
+
+
+# ---- Forge F3: consent withdrawal invalidates templates -------------------------------------
+def test_f3_withdrawn_consent_template_not_matched_and_crypto_erased(env):
+    from oiris.guard.consent import ConsentRecord
+    env["consents"].add(ConsentRecord("c-wd", "s9", {"face_enrollment"}))
+    m = make(env)
+    sid = m.start_session(); a = enroll(m, sid, 77, "A", consent="c-wd"); m.end_session(sid)
+    assert m.process_frame(synth_face_frame(77), place="P")["matched"] == 1   # templates cached in RAM
+    old_tpl = env["db"].execute("SELECT template FROM fm_enrolled WHERE person_id=?", (a,)).fetchone()[0]
+    env["consents"]._r["c-wd"].withdrawn = True          # withdrawal without any hook firing
+    assert m.process_frame(synth_face_frame(77), place="P")["matched"] == 0
+    assert env["db"].execute("SELECT COUNT(*) FROM fm_enrolled WHERE person_id=?", (a,)).fetchone()[0] == 0
+    assert not m._can_open_with_any(old_tpl, b"tpl:" + a.encode())
+
+
+def test_f3_withdraw_hook_purges_immediately_and_keeps_others(env):
+    from oiris.guard.consent import ConsentRecord
+    env["consents"].add(ConsentRecord("c-wd2", "s8", {"face_enrollment"}))
+    m = make(env)
+    sid = m.start_session(); a = enroll(m, sid, 61, "A", consent="c-wd2"); b = enroll(m, sid, 62, "B"); m.end_session(sid)
+    m.process_frame(synth_face_frame(61), place="P")
+    env["consents"].withdraw("c-wd2")
+    ids = {r[0] for r in env["db"].execute("SELECT person_id FROM fm_enrolled")}
+    assert ids == {b}
+    assert all(t.person_id != a for t in m._load_templates())
+    assert m.process_frame(synth_face_frame(62), place="P")["matched"] == 1
+
+
+def test_f3_expired_consent_template_purged_on_load(env):
+    from oiris.guard.consent import ConsentRecord
+    env["consents"].add(ConsentRecord("c-exp", "s7", {"face_enrollment"}, expires_utc=time.time() + 3600))
+    m = make(env)
+    sid = m.start_session(); a = enroll(m, sid, 55, "A", consent="c-exp"); m.end_session(sid)
+    env["consents"]._r["c-exp"].expires_utc = 1.0
+    assert m.process_frame(synth_face_frame(55), place="P")["matched"] == 0
+    assert env["db"].execute("SELECT COUNT(*) FROM fm_enrolled WHERE person_id=?", (a,)).fetchone()[0] == 0

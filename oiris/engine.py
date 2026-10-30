@@ -34,7 +34,8 @@ class Engine:
     def __post_init__(self) -> None:
         c = self.config
         self.bus = self.bus or SensorBus(c.queue_size, c.adapter_timeout_s, c.restart_backoff_max_s,
-                                         c.breaker_threshold, c.breaker_cooldown_s)
+                                         c.breaker_threshold, c.breaker_cooldown_s,
+                                         hung_disable_s=c.adapter_hung_disable_s)
         if not self.score_modules:
             for name in self.registry.names("score"):
                 p = self.registry.get("score", name)
@@ -44,15 +45,19 @@ class Engine:
                     self.score_modules.append(p.factory())
                 except Exception as e:  # noqa: BLE001
                     log.error("score module %s failed to construct: %s", name, e)
-        self._windows: dict[str, list] = {}
+        self._windows: dict[str, tuple[int, list]] = {}   # module -> (received_ns, last window)
+        self._seen_ns: dict[str, int] = {}                  # adapter -> engine time of its last fresh sample
 
     def add_adapter(self, adapter: Any, cfg: dict | None = None) -> None:
         self.bus.add(adapter, cfg)
 
     def _collect(self) -> dict[str, list]:
         by_cap: dict[str, list] = {}
+        now = time.monotonic_ns()
         for aid, a in self.bus.adapters.items():
             samples = self.bus.drain(aid)
+            if samples:
+                self._seen_ns[aid] = now
             for cap in getattr(a, "caps", ()):
                 by_cap.setdefault(cap, []).extend(samples)
         return by_cap
@@ -67,7 +72,15 @@ class Engine:
                     self.face_match.process_frame(s.data, place=self.face_place)
                 except Exception as e:  # noqa: BLE001 - M-16 can never stop the loop
                     log.error("face_match failed: %s", e)
+        now = time.monotonic_ns()
+        max_age_ns = int(self.config.sensor_max_age_s * 1e9)
         health = self.bus.health()
+        for aid, seen in self._seen_ns.items():
+            # Forge F1: a reading past max age is stale; never show OK health on stale data.
+            age = now - seen
+            if age > max_age_ns and aid in health and health[aid]["health"] == Health.OK.value:
+                health[aid]["health"] = Health.DEGRADED.value
+                health[aid]["reason"] = f"stale: no fresh reading for {age / 1e9:.1f}s"
         scores: list[Score] = []
         for m in self.score_modules:
             src = [aid for aid, a in self.bus.adapters.items() if set(a.caps) & set(m.inputs)]
@@ -78,9 +91,13 @@ class Engine:
                 continue
             window = [s for cap in m.inputs for s in by_cap.get(cap, [])][-1:]
             if not window:
-                window = self._windows.get(m.name, [])
+                got, cached = self._windows.get(m.name, (0, []))
+                # Forge F1: reuse a cached reading only within max age; stale data is never scored.
+                window = cached if cached and now - got <= max_age_ns else []
+                if not window:
+                    self._windows.pop(m.name, None)
             else:
-                self._windows[m.name] = window
+                self._windows[m.name] = (now, window)
             scores.append(safe_update(m, window))
         res = fuse(scores, self.fusion_model, self.config.min_families_for_alert, self.config.max_unhealthy_families)
         if self.config.enabled("M-02"):

@@ -2,7 +2,6 @@
 templates except enrolled-person templates from the opted-in M-16 module (ADR-0049)."""
 from __future__ import annotations
 import hashlib, hmac
-import numpy as np
 
 
 class PrivacyError(PermissionError):
@@ -23,7 +22,7 @@ def check_persist(kind: str, contains_person: bool, payload=None, *, source: str
     if kind in ("audio", "raw_audio", "voice_wav"):
         raise PrivacyError("audio is never written to disk")
     if kind in ("nir_frame", "eye_frame", "rgb_frame") and contains_person:
-        if payload is None or getattr(payload, "shape", (999, 999))[:2] > (64, 64):
+        if payload is None or not crop_ok(payload):
             raise PrivacyError("full frames containing a person may not be saved (64x64 crops only)")
     if kind == "face_template":
         if source != FACE_TEMPLATE_SOURCE or not m16_enabled:
@@ -42,5 +41,13 @@ def round_gps(lat: float | None, lon: float | None, decimals: int = 2):
     return round(lat, decimals), round(lon, decimals)
 
 
-def crop_ok(arr: np.ndarray) -> bool:
-    return arr.ndim >= 2 and arr.shape[0] <= 64 and arr.shape[1] <= 64
+CROP_MAX = 64
+
+
+def crop_ok(arr) -> bool:
+    """Each spatial dimension (and so the area) must be within CROP_MAX (Forge F4: no tuple compare)."""
+    shape = getattr(arr, "shape", None)
+    if shape is None or len(shape) < 2:
+        return False
+    h, w = int(shape[0]), int(shape[1])
+    return 0 <= h <= CROP_MAX and 0 <= w <= CROP_MAX and h * w <= CROP_MAX * CROP_MAX

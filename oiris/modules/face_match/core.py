@@ -7,7 +7,7 @@ with the face key; their name and template are sealed with the DEK. Deleting a p
 destroys their DEK row; disabling destroys the face key file and every row, then VACUUMs.
 Logs (places) are sealed with a separate log key in `<data_dir>/face_match_log.key`."""
 from __future__ import annotations
-import os, statistics, time, uuid
+import logging, os, statistics, time, uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable
@@ -20,9 +20,12 @@ from ...guard.vocabulary import check_output, check_text
 from ...schema import Health
 from ...security.aead import Sealer
 from .optin import STRICT, OptInError, log_change, opt_in_record
+
 from .port import REQUIRED_ANGLES, Angle, Embedding, FaceBox, Template, TemplateStatus, unit
 from .quality import QualityLimits, check_shot
 from .supervisor import Guarded
+
+log = logging.getLogger(__name__)
 
 KEY_FILE, LOG_KEY_FILE = "face_match.key", "face_match_log.key"
 REENROLL_MARGIN = 0.02
@@ -145,6 +148,8 @@ class FaceMatchModule:
         self._captures: dict[str, _Capture] = {}
         self._sessions: dict[str, set] = {}
         self._templates: list[Template] | None = None
+        self._tpl_consent: dict[str, str | None] = {}
+        self.consents.withdraw_hooks.append(self._on_consent_withdrawn)
         self.stats = {"frames": 0, "matched": 0, "unrecognized": 0, "faces": 0}
 
     # ---- keys --------------------------------------------------------------------------
@@ -168,15 +173,50 @@ class FaceMatchModule:
         return self.guard.health, self.guard.reason
 
     # ---- templates (RAM) ---------------------------------------------------------------
+    def _consent_revoked(self, consent_id: str | None) -> bool:
+        """Forge F3: True when a known consent record is withdrawn or expired. Templates enrolled under a
+        recorded no-consent override (consent_id None) and ids this registry has never seen are kept;
+        the registry is not persisted, so absence is not evidence of withdrawal."""
+        if not consent_id:
+            return False
+        rec = self.consents._r.get(consent_id)
+        if rec is None:
+            return False
+        try:
+            self.consents.require(consent_id, "face_enrollment", now=self.clock())
+        except ConsentError:
+            return True
+        return False
+
+    def _purge_revoked(self) -> int:
+        rows = self.db.execute("SELECT person_id, consent_id FROM fm_enrolled").fetchall()
+        gone = [pid for pid, cid in rows if self._consent_revoked(cid)]
+        for pid in gone:
+            rep = self.delete_person(pid)   # same crypto-erase + verification path as a user deletion
+            log_change(self.db, self.chain, "consent_withdrawn", {"templates_destroyed": 1, "verified": rep.verified})
+        return len(gone)
+
+    def _on_consent_withdrawn(self, consent_id: str) -> None:
+        try:
+            self._purge_revoked()
+        except Exception as e:  # noqa: BLE001 - a hook must not break the withdrawing caller
+            log.error("purge after consent withdrawal failed: %s", e)
+            self._drop_templates()
+
     def _load_templates(self) -> list[Template]:
+        # Forge F3: consent is rechecked on every load/match, not only at enrollment.
+        if self._templates is not None and any(self._consent_revoked(c) for c in self._tpl_consent.values()):
+            self._purge_revoked()
         if self._templates is None:
-            out = []
-            for pid, dek, tpl, mid in self.db.execute("SELECT person_id, dek, template, model_id FROM fm_enrolled"):
+            self._purge_revoked()
+            out, cons = [], {}
+            for pid, dek, tpl, mid, cid in self.db.execute(
+                    "SELECT person_id, dek, template, model_id, consent_id FROM fm_enrolled"):
                 if mid != self.backend.model_id:
                     continue   # a template is only valid with the model that made it
                 vec = np.frombuffer(self._dek(pid, dek).open(tpl, b"tpl:" + pid.encode()), dtype=np.float32).copy()
-                out.append(Template(pid, vec))
-            self._templates = out
+                out.append(Template(pid, vec)); cons[pid] = cid
+            self._templates, self._tpl_consent = out, cons
         return self._templates
 
     def _drop_templates(self) -> None:

@@ -44,7 +44,8 @@ def default_validator(s: Any) -> bool:
 class SensorBus:
     def __init__(self, queue_size: int = 64, timeout_s: float = 2.0, backoff_max_s: float = 10.0,
                  breaker_threshold: int = 5, breaker_cooldown_s: float = 30.0,
-                 validator: Callable[[Any], bool] = default_validator, backoff_base_s: float = 0.05):
+                 validator: Callable[[Any], bool] = default_validator, backoff_base_s: float = 0.05,
+                 hung_disable_s: float = 30.0):
         self.queue_size = queue_size
         self.timeout_s = timeout_s
         self.backoff_max_s = backoff_max_s
@@ -52,6 +53,9 @@ class SensorBus:
         self.breaker_threshold = breaker_threshold
         self.breaker_cooldown_s = breaker_cooldown_s
         self.validator = validator
+        self.hung_disable_s = hung_disable_s
+        # Forge F2: at most one in-flight read thread per adapter: (thread, result box, started_mono)
+        self._inflight: dict[str, tuple[threading.Thread, dict, float]] = {}
         self.adapters: dict[str, Any] = {}
         self.state: dict[str, AdapterState] = {}
         self.queues: dict[str, collections.deque] = {}
@@ -96,7 +100,20 @@ class SensorBus:
             st.health, st.reason = h, reason
 
     def _read_with_timeout(self, a: Any) -> tuple[str, Any]:
-        """Run read() in a helper thread so a hung driver cannot freeze the adapter loop."""
+        """Run read() in a helper thread so a hung driver cannot freeze the adapter loop.
+
+        Forge F2: never more than one read thread per adapter. While a timed-out read is still
+        running no new read is spawned; the call waits on the existing one and reports "hung".
+        A read that finally returns after timing out reports "late" (its value is discarded)."""
+        aid = a.id
+        cur = self._inflight.get(aid)
+        if cur is not None:
+            t, _box, _t0 = cur
+            t.join(self.timeout_s)
+            if t.is_alive():
+                return "hung", None
+            del self._inflight[aid]
+            return "late", None
         box: dict[str, Any] = {}
 
         def call() -> None:
@@ -105,14 +122,19 @@ class SensorBus:
             except BaseException as e:  # noqa: BLE001
                 box["e"] = e
 
-        t = threading.Thread(target=call, daemon=True, name=f"read-{a.id}")
+        t = threading.Thread(target=call, daemon=True, name=f"read-{aid}")
+        self._inflight[aid] = (t, box, time.monotonic())
         t.start()
         t.join(self.timeout_s)
         if t.is_alive():
             return "timeout", None
+        del self._inflight[aid]
         if "e" in box:
             return "error", box["e"]
         return "ok", box.get("v")
+
+    def inflight_reads(self) -> int:
+        return sum(1 for t, _b, _t0 in list(self._inflight.values()) if t.is_alive())
 
     def _run(self, aid: str) -> None:
         a, st = self.adapters[aid], self.state[aid]
@@ -131,6 +153,23 @@ class SensorBus:
                     self._failure(aid, f"open failed: {e}")
                     continue
             kind, v = self._read_with_timeout(a)
+            if kind == "hung":
+                hung_for = time.monotonic() - self._inflight[aid][2] if aid in self._inflight else 0.0
+                with self._lock:
+                    st.timeouts += 1
+                # counts toward the circuit breaker (no restart while the read is still in flight)
+                self._failure(aid, f"hung: read in flight {hung_for:.1f}s", restart=False)
+                if hung_for >= self.hung_disable_s:
+                    # supervisor: disabled until the driver's read returns; then the restart path runs
+                    self._mark(aid, Health.FAILED, f"disabled: read hung {hung_for:.1f}s, waiting for driver")
+                continue
+            if kind == "late":
+                # the hung read returned; restart the adapter cleanly (its late value is discarded)
+                self._mark(aid, Health.DEGRADED, "recovered from hung read; restarting")
+                self._safe(a, "stop")
+                self._safe(a, "close")
+                opened = False
+                continue
             if kind == "ok":
                 if v is None:  # end of stream / nothing available
                     self._stop.wait(0.01)

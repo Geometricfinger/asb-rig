@@ -3,12 +3,14 @@ with a missing-family mask. Evidence rule: an alert needs >=2 independent famili
 one family alone is FYI; >=2 unhealthy families suppress the index. Outputs anomaly
 signatures only; no field names a class of person."""
 from __future__ import annotations
-import json
+import json, logging, math
 from dataclasses import dataclass, field
 from pathlib import Path
 import numpy as np
 
 from ..schema import Health, Level, Score
+
+log = logging.getLogger(__name__)
 
 FAMILIES = ["optical", "thermal", "rf", "vital", "eye_liveness", "voice"]
 SCORE_FAMILY = {
@@ -46,10 +48,12 @@ class FusionModel:
     @classmethod
     def from_json(cls, s: str) -> "FusionModel":
         d = json.loads(s)
-        w, wm = np.asarray(d["w"], float), np.asarray(d["w_mask"], float)
-        if w.shape != (6,) or wm.shape != (6,) or not np.all(np.isfinite(w)) or not np.isfinite(d["b"]):
-            raise ValueError("invalid fusion weights")
-        return cls(w, wm, float(d["b"]), str(d.get("version", "?")))
+        w, wm, b = np.asarray(d["w"], float), np.asarray(d["w_mask"], float), float(d["b"])
+        if w.shape != (6,) or wm.shape != (6,):
+            raise ValueError("invalid fusion weights: shape")
+        if not (np.all(np.isfinite(w)) and np.all(np.isfinite(wm)) and math.isfinite(b)):   # Forge F5
+            raise ValueError("invalid fusion weights: non-finite value")
+        return cls(w, wm, b, str(d.get("version", "?")))
 
 
 def family_values(scores: list[Score]) -> tuple[np.ndarray, np.ndarray, dict, list[str]]:
@@ -125,5 +129,7 @@ def load_weights(path: str | Path, fallback: FusionModel | None = None) -> Fusio
     """Model-load failures never crash: fall back to last-good (or the prior)."""
     try:
         return FusionModel.from_json(Path(path).read_text(encoding="utf-8"))
-    except Exception:
-        return fallback or FusionModel()
+    except Exception as e:  # noqa: BLE001
+        m = fallback or FusionModel()
+        log.warning("fusion weights %s rejected (%s); using %s", path, e, m.version)
+        return m

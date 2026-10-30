@@ -1,5 +1,6 @@
 """Startup config: validated, safe defaults, feature flags per module (M-01..M-16)."""
 from __future__ import annotations
+import math
 import json
 from dataclasses import dataclass, field, asdict
 from pathlib import Path
@@ -70,6 +71,8 @@ class Config:
     thermal_range_c: tuple = (10.0, 45.0)
     queue_size: int = 64
     adapter_timeout_s: float = 2.0
+    sensor_max_age_s: float = 5.0      # cached readings older than this are stale: not scored, health degraded
+    adapter_hung_disable_s: float = 30.0  # a read hung this long disables the adapter until it returns
     restart_backoff_max_s: float = 10.0
     breaker_threshold: int = 5
     breaker_cooldown_s: float = 30.0
@@ -106,6 +109,11 @@ class Config:
         if not 1 <= self.rekey_seconds <= 600: errs.append("rekey_seconds must be 1..600")
         if not 0 < self.pled_duty_cap <= 0.25: errs.append("LED duty cap must be in (0, 0.25]")
         if self.queue_size < 1 or self.adapter_timeout_s <= 0: errs.append("queue/timeout must be positive")
+        if not (isinstance(self.sensor_max_age_s, (int, float)) and math.isfinite(self.sensor_max_age_s) and self.sensor_max_age_s > 0):
+            errs.append("sensor_max_age_s must be a positive number")
+        if not (isinstance(self.adapter_hung_disable_s, (int, float)) and math.isfinite(self.adapter_hung_disable_s)
+                and self.adapter_hung_disable_s > 0):
+            errs.append("adapter_hung_disable_s must be a positive number")
         errs += validate_face_match(self.face_match)
         errs += validate_plugins(self.plugins)
         if errs:
