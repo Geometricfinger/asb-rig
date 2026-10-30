@@ -21,6 +21,9 @@ You do not need to handle crashes, hangs or restarts: the bus does that.
 ## Add a score
 Implement `name` (`S_*`), `inputs` (capabilities), `module_flag` (spec module or `None`) and `update(window) -> Score`. Map it to a family in `fusion/stack.SCORE_FAMILY` (that is the one core edit; a PR must justify the family). Exceptions/NaN are contained by `safe_update`.
 
+## Replace or remove a model slot
+See [PLUGINS.md](PLUGINS.md): speech recogniser, voice anti-spoof, speaker embedding, eye model, fusion weights and face match are all selected by `plugins.slots` in config.
+
 ## Add a model
 Ship a directory with `manifest.json` (C9: name, version, license, file, sha256, hypothesis, output_range `[0,1]`, data_tier) and the weights file. Load with `oiris.models.load_into(slot, path, loader)`. A bad hash, license or output range leaves the slot on its last-good model or disabled.
 

@@ -28,7 +28,9 @@ def load(cfg, db, keys, registry, chain=None, consents=None, backend: Any = None
     core = importlib.import_module("oiris.modules.face_match.core")
     fcfg = core.FaceMatchConfig.from_dict(cfg.face_match)
     if backend is None:
-        backend = registry.create("face_match", fcfg.adapter)
+        # one config setting swaps the backend: plugins.slots.face_match (else face_match.adapter)
+        name = (getattr(cfg, "plugins", {}) or {}).get("slots", {}).get("face_match") or fcfg.adapter
+        backend = registry.create("face_match", name)
     return core.FaceMatchModule(db, keys, cfg.data_dir, backend, chain=chain, cfg=fcfg, consents=consents,
                                 timeout_s=cfg.adapter_timeout_s, breaker_threshold=cfg.breaker_threshold,
                                 breaker_cooldown_s=cfg.breaker_cooldown_s)

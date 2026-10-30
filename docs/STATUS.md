@@ -5,6 +5,7 @@ Version 0.1.0. "Real" = implemented and unit-tested headless. "Untested on hardw
 | Area | State |
 |---|---|
 | Sensor bus, registry, config, flags, fault isolation | **Real**, tested (incl. fault injection) |
+| Replaceable model slots (speech recogniser, voice anti-spoof, speaker embedding, eye model, fusion weights, face match) via config + `oiris.plugins` | **Real**, swap/removal contract tested (`tests/test_plugin_slots.py`). **No speech/anti-spoof/speaker model ships**; reference DTMF plugin only (not speech). Vosk wrapper untested against a real Vosk install |
 | Fusion (families, LR stack, mask, evidence rule, suppression, training, AUC) | **Real**; default weights are a hand-set prior (no trained weights yet) |
 | Guards (vocabulary, consent, privacy, retention, phrases, passive radio) | **Real**, tested |
 | Security (AES-GCM, keystore + scrypt + key slots, Noise_XX + rekey, 90-day static-key rotation + re-pair (`StaticKeyManager`, channel refuses expired keys), hash chain + anchors every 100 records **and** every 60 s, panic, wipe, lint test banning `==`/`!=` on secrets) | **Real** in Python, tested. LUKS2 data-partition setup is scripted (`scripts/pi_luks2_setup.sh`: idempotent, `--dry-run`, typed confirmation; tested in dry-run with faked tools). **Never run on a real Pi yet** |

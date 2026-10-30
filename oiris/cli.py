@@ -16,7 +16,7 @@ from .config import Config, ConfigError
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="oiris", description="Anomaly Signature Bench (research tool; no identity output)")
     p.add_argument("command", nargs="?", default="run",
-                   choices=["run", "selftest", "check-phrases", "dashboard", "record", "version", "face-match", "glasses-sim"])
+                   choices=["run", "selftest", "check-phrases", "dashboard", "record", "version", "face-match", "glasses-sim", "plugins"])
     p.add_argument("sub", nargs="?", help="face-match subcommand")
     p.add_argument("--mode", action="append", choices=["personal", "research"], help="face-match enable: mode(s)")
     p.add_argument("--jurisdiction", help="face-match enable: jurisdiction profile (unknown -> strictest)")
@@ -39,6 +39,19 @@ def main(argv: list[str] | None = None) -> int:
     if a.command == "face-match":
         from .face_match_cli import run
         return run(a, cfg, a.config or Path(cfg.data_dir).expanduser() / "config.json")
+    if a.command == "plugins":
+        from .registry import default_registry
+        from .slots import SLOTS, SlotManager
+        reg = default_registry(cfg.plugins)
+        for w in reg.warnings:
+            print(w, file=sys.stderr)
+        sm = SlotManager.from_config(cfg, reg)
+        for slot in SLOTS:
+            name = sm.slots.get(slot) or "-"
+            st = "configured" if slot == "face_match" else (sm.get(slot) and "active") or sm.status.get(slot, "empty")
+            avail = ", ".join(reg.names(slot)) or "none installed"
+            print(f"{slot:18} -> {name:20} [{st}]  available: {avail}")
+        return 0
     if a.command == "version":
         print(__version__); return 0
     if a.command == "check-phrases":
@@ -61,7 +74,7 @@ def main(argv: list[str] | None = None) -> int:
             from .registry import default_registry
             _, ks, db, chain = _ctx(cfg)
             try:
-                face = face_match_gate.load(cfg, db, ks, default_registry(), chain=chain)
+                face = face_match_gate.load(cfg, db, ks, default_registry(cfg.plugins), chain=chain)
             except PermissionError as e:
                 print(f"face match page disabled: {e}")
         serve(cfg, port=a.port, face_module=face); return 0

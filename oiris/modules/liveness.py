@@ -64,7 +64,7 @@ class DigitPrompt:
 
 @_dc(frozen=True)
 class DigitResult:
-    state: str           # "observed" | "not observed" | "rejected"
+    state: str           # "observed" | "not observed" | "rejected" | "unavailable"
     reason: str
     latency_s: float | None = None
 
@@ -116,6 +116,18 @@ class DigitChallenge:
             return DigitResult("not observed", "digits did not match", lat)
         return DigitResult("observed", "digits matched in time", lat)
 
+    def verify_audio(self, nonce: str, audio, sample_rate: int, slots) -> DigitResult:
+        """Run the configured `speech_recognizer` slot (any plugin: bundled DTMF reference,
+        a Vosk-style wrapper, or the user's own) on the answer audio, then verify. Empty or
+        failing slot -> "unavailable" (no indicator), never a crash and never "observed"."""
+        p = self._open.get(nonce)
+        t = slots.transcribe(audio, sample_rate, p.issued_at if p else self.clock())
+        if t is None:
+            if p is not None:
+                self._open.pop(nonce, None); self._used.add(nonce)
+            return DigitResult("unavailable", "no speech recogniser plugged in (plugins.slots.speech_recognizer)")
+        return self.verify(nonce, t.text, t.speech_start)
+
     def expire(self) -> int:
         now = self.clock()
         dead = [n for n, p in self._open.items() if now > p.expires_at]
@@ -125,6 +137,10 @@ class DigitChallenge:
 
 
 def digit_score(res: DigitResult, confidence: float = 0.6) -> Score:
-    """Feed a challenge result into the S_voice indicator family (stack above)."""
+    """Feed a challenge result into the S_voice indicator family (stack above).
+    An "unavailable" result carries zero confidence, so `indicators` skips it."""
+    if res.state == "unavailable":
+        return Score(module="S_voice", value=0.5, confidence=0.0, health=Health.DEGRADED,
+                     evidence={"challenge": res.state, "reason": res.reason})
     return Score(module="S_voice", value=res.as_score_value(), confidence=confidence, health=Health.OK,
                  evidence={"challenge": res.state, "reason": res.reason})

@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "oiris-vosk-wrapper"
+version = "0.1.0"
+description = "O Iris speech_recognizer wrapper for a user-installed Vosk engine + model (none bundled)"
+license = {text = "Apache-2.0"}
+dependencies = ["o-iris", "numpy"]
+optional-dependencies = {engine = ["vosk"]}
+
+[project.entry-points."oiris.plugins"]
+vosk = "oiris_vosk_wrapper:register"

@@ -40,6 +40,21 @@ def validate_face_match(d: dict) -> list[str]:
     return errs
 
 
+PLUGIN_KEYS = {"paths", "entry_points", "slots", "options"}
+SLOT_NAMES = {"speech_recognizer", "voice_antispoof", "speaker_embed", "eye_model", "fusion_weights", "face_match"}
+
+
+def validate_plugins(d: dict) -> list[str]:
+    if not isinstance(d, dict):
+        return ["plugins must be an object"]
+    errs = []
+    if set(d) - PLUGIN_KEYS: errs.append(f"plugins: unknown keys {sorted(set(d) - PLUGIN_KEYS)}")
+    if not all(isinstance(p, str) and ":" in p for p in d.get("paths", [])): errs.append("plugins.paths: 'module:function' strings")
+    slots = d.get("slots", {})
+    if not isinstance(slots, dict) or set(slots) - SLOT_NAMES: errs.append(f"plugins.slots: keys must be in {sorted(SLOT_NAMES)}")
+    return errs
+
+
 FACE_MATCH_KEYS = {"modes", "jurisdiction", "require_enrollment_consent", "match_threshold", "encounter_retention_days", "place_source",
                    "time_bucket_minutes", "allow_log_export", "enroll_min_shots", "enroll_max_shots", "enroll_required_angles",
                    "reenroll_confidence_drop", "reenroll_window_matches", "adapter", "model_dir", "allow_test_backend"}
@@ -67,6 +82,9 @@ class Config:
     allow_network: bool = False
     pled_duty_cap: float = 0.25
     face_match: dict = field(default_factory=dict)   # M-16 settings, validated by FACE_MATCH_KEYS below
+    # Replaceable model slots (docs/PLUGINS.md): {"paths": ["pkg.mod:register"], "entry_points": true,
+    #  "slots": {"speech_recognizer": "name", ...}, "options": {name: {...}}}
+    plugins: dict = field(default_factory=dict)
 
     def enabled(self, module: str) -> bool:
         return module in LOCKED_ON or bool(self.flags.get(module, False))
@@ -89,6 +107,7 @@ class Config:
         if not 0 < self.pled_duty_cap <= 0.25: errs.append("LED duty cap must be in (0, 0.25]")
         if self.queue_size < 1 or self.adapter_timeout_s <= 0: errs.append("queue/timeout must be positive")
         errs += validate_face_match(self.face_match)
+        errs += validate_plugins(self.plugins)
         if errs:
             raise ConfigError("; ".join(errs))
         return self

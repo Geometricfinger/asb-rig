@@ -23,6 +23,7 @@ It is built for one question: *can a cheap, passive, consent-based sensor stack 
 | `oiris/guard/` | **Required** guards: vocabulary, consent, privacy, retention, phrase whitelist, passive-only radio |
 | `oiris/security/` | AES-256-GCM at rest, Noise_XX rotating-key link, HMAC hash chain + Ed25519 anchors, constant-time compare, crypto-erase, panic gesture, 10-fail wipe |
 | `oiris/store/` | Encrypted SQLite with versioned migrations; sighting log (GPS, map pins) and sweep timeline |
+| `oiris/slots.py`, `examples/plugins/` | Replaceable model slots: swap or remove voice recognition, face match, eye and fusion models with one config line ([docs/PLUGINS.md](docs/PLUGINS.md)); no weights bundled |
 | `oiris/modules/` | Voice tiers, golden dataset + feedback loop, fingerprints, liveness stack, app gate |
 | `oiris/headless/` | Headless mode: replay, virtual clock, no network, LED stub |
 | `oiris/dashboard/` | Minimal local dashboard (127.0.0.1 only) |

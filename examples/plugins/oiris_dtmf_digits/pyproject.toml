@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "oiris-dtmf-digits"
+version = "0.1.0"
+description = "Reference O Iris speech_recognizer plugin (DTMF keypad tones, no model)"
+license = {text = "Apache-2.0"}
+dependencies = ["o-iris", "numpy"]
+
+[project.entry-points."oiris.plugins"]
+dtmf_digits = "oiris_dtmf_digits:register"

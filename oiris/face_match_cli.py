@@ -85,7 +85,7 @@ def run(a, cfg: Config, cfg_path: Path, inp: Callable[[str], str] = input, out=p
         from .modules import face_match_gate
         from .registry import default_registry
         cfg = Config.load(cfg_path) if cfg_path.exists() else cfg
-        m = face_match_gate.load(cfg, db, ks, default_registry(), chain=chain, backend=backend)
+        m = face_match_gate.load(cfg, db, ks, default_registry(cfg.plugins), chain=chain, backend=backend)
         if m is None:
             out("Face matching is off. Turn it on first: oiris face-match enable"); return 2
         if sub == "review":
