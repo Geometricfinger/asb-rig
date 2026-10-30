@@ -24,4 +24,27 @@
     <string name="fm_no_frame">Camera not ready yet</string>
     <string name="tab_map">Map</string>
     <string name="tab_enroll">Face match</string>
+    <string name="tab_timeline">Timeline · Review</string>
+    <string name="timeline_locked">Locked. Unlock O Iris to see the timeline.</string>
+    <string name="timeline_sweeps">Sweeps</string>
+    <string name="timeline_empty">No sweeps recorded yet.</string>
+    <string name="timeline_sightings">Sightings to review</string>
+    <string name="timeline_no_sightings">No sightings yet.</string>
+    <string name="timeline_mark_reviewed">Mark all as reviewed</string>
+    <string name="thermal_to_colour">Thermal: switch to colour overlay</string>
+    <string name="thermal_to_gray">Thermal: switch to grayscale</string>
+    <string name="thermal_waiting">Waiting for the pod thermal frame</string>
+    <string name="node_glint">Fallback node: camera glint + BLE</string>
+    <string name="node_glint_on">Fallback node running (advisory only; never alerts alone)</string>
+    <string name="node_eye">Fallback node: front camera eye (report-only)</string>
+    <string name="node_idle">Fallback node off</string>
+    <string name="mic_off">Microphone: off (optional)</string>
+    <string name="mic_on">Microphone: on, level only</string>
+    <string name="pod_connect">Connect pod (Bluetooth)</string>
+    <string name="pod_connecting">Pod: scanning…</string>
+    <string name="pod_connected">Pod connected (encrypted link)</string>
+    <string name="pod_pair_title">Pair the pod</string>
+    <string name="pod_pair_msg">This phone\'s fingerprint is %1$s. Enter it on the pod, then type the pod\'s fingerprint here.</string>
+    <string name="pod_fp_hint">Pod fingerprint (32 hex characters)</string>
+    <string name="pod_pair_ok">Pair</string>
 </resources>

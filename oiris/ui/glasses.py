@@ -153,3 +153,74 @@ def state_from_result(res: dict) -> GlassesState:
     text = ("Signatures " + " ".join(sigs[:4])) if sigs else ""
     health = {k: (v["health"] if isinstance(v, dict) else str(v)) for k, v in (res.get("health") or {}).items()}
     return GlassesState(level=lvl, alert_text=text, health=health)
+
+
+# ---- M-16 enrollment mini-guide (FACE_MATCHING_MODULE_SPEC §7.3 step 3) ----------------------
+# The glasses show only the next angle needed and a tick when a shot is accepted. No names, no
+# face image, nothing in the clear centre, and never anything on a *match* (spec §6 "Never does").
+GUIDE_ORDER = ("front", "left", "right", "up", "down")
+GUIDE_WORDS = {"front": "Look straight ahead", "left": "Turn head left", "right": "Turn head right",
+               "up": "Tilt head up", "down": "Tilt head down"}
+GUIDE_ARROW = {"front": "", "left": "\u2190", "right": "\u2192", "up": "\u2191", "down": "\u2193"}
+
+
+@dataclass
+class EnrollGuide:
+    needed: list[str]                 # angles still needed, in GUIDE_ORDER
+    last_ok: bool | None = None        # result of the last submitted shot (None = no shot yet)
+    last_reason: str = ""              # plain reason when the last shot was rejected
+    complete: bool = False
+
+    @property
+    def next_angle(self) -> str | None:
+        return self.needed[0] if self.needed else None
+
+
+def guide_from_port(port, person_id: str, last=None) -> EnrollGuide:
+    """Build the guide from an EnrollmentPort (local core or remote.py proxy) and the last
+    ShotResult. Works with either Angle enums or plain strings."""
+    have = {getattr(a, "value", a) for a in port.needed_angles(person_id)}
+    needed = [a for a in GUIDE_ORDER if a in have]
+    ok = None if last is None else bool(last.ok)
+    reason = "" if last is None or last.ok else str(last.reason)
+    return EnrollGuide(needed, ok, reason, complete=not needed)
+
+
+def _short(reason: str, n: int) -> str:
+    words = reason.replace(",", "").split()
+    return " ".join(words[:n])
+
+
+def render_enroll_guide(g: EnrollGuide, tok: dict | None = None) -> str:
+    tok = tok or T.load()
+    check_layout(tok)
+    W, H = tok["glasses"]["canvas"]
+    z, c, fs = zones(tok), tok["color"], tok["type"]["glasses_body"]
+    br = tok["glasses"]["default_brightness"]
+    maxw = tok["glasses"]["max_words_alert_line"]
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
+           f'font-family="{tok["type"]["font_family"]}" font-size="{fs}" opacity="{br}" data-mode="enroll-guide">',
+           f'<rect width="{W}" height="{H}" fill="{c["bg"]}"/>']
+    if g.complete:
+        line = "Template complete"
+    elif g.last_ok is False and g.last_reason:
+        line = _short(g.last_reason, maxw)
+    else:
+        a = g.next_angle or "front"
+        line = (GUIDE_ARROW[a] + " " + GUIDE_WORDS[a]).strip()
+    if len(line.split()) > maxw:
+        raise LayoutError("guide line exceeds the word limit")
+    check_text(line)
+    x, y, w, h = z["G2"]
+    out.append(f'<text id="G2" x="8" y="{y + h - 10}" fill="{c["text"]}">{html.escape(line)}</text>')
+    if g.last_ok:   # tick for the accepted shot, top-right of G2, outside the clear centre
+        tx, ty = W - 40, y + 6
+        out.append(f'<polyline id="tick" points="{tx},{ty + 12} {tx + 8},{ty + 20} {tx + 24},{ty + 2}" fill="none" '
+                   f'stroke="{c["health_ok"]}" stroke-width="3"/>')
+    x, y, w, h = z["G4"]       # five progress dots: filled = captured
+    for i, a in enumerate(GUIDE_ORDER):
+        done = a not in g.needed
+        out.append(f'<circle class="guide" data-angle="{a}" cx="{x + 8 + i * 18}" cy="{y + h / 2}" r="5" '
+                   f'fill="{c["text"] if done else "none"}" stroke="{c["text_muted"]}"/>')
+    out.append("</svg>")
+    return "".join(out)

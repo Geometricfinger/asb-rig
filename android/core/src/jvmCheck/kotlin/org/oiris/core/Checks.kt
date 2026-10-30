@@ -108,6 +108,81 @@ fun main(args: Array<String>) {
     expect("bad tokens refused", throws { AlertVisuals.fromTokens("{\"alert_levels\":{\"low\":{}},\"color\":{\"alert\":{}}}") })
     expect("json roundtrip", Json.encode(Json.decode("{\"b\":[1,2.5,\"x\\n\"],\"a\":null}")) == "{\"a\":null,\"b\":[1,2.5,\"x\\n\"]}")
 
+
+    // ---- BLE GATT framing of Noise frames (shared with oiris/link/ble.py) ----
+    val bv = (Json.decode(File(root, "tests/vectors/ble_framing.json").readText()) as Map<String, Any?>)["cases"] as List<Map<String, Any?>>
+    for (c in bv) {
+        val frame = unhex(c["frame"] as String); val mtu = (c["mtu"] as Long).toInt(); val seq0 = (c["seq0"] as Long).toInt()
+        val segs = BleFraming.segment(frame, mtu, seq0)
+        expect("ble segments n=${frame.size} mtu=$mtu", segs.map { hex(it) } == c["segments"] as List<String>)
+        expect("ble segment fits ATT mtu=$mtu", segs.all { it.size <= mtu - 3 })
+        val d = Desegmenter(); var got: ByteArray? = null
+        segs.forEach { s -> d.feed(s)?.let { got = it } }
+        expect("ble reassembly n=${frame.size}", got != null && got!!.contentEquals(frame))
+    }
+    run {   // a lost segment drops the partial frame; the next frame still arrives
+        val f1 = ByteArray(1000) { 1 }; val f2 = ByteArray(700) { 2 }
+        val s1 = BleFraming.segment(f1, 185, 0); val s2 = BleFraming.segment(f2, 185, s1.size)
+        val d = Desegmenter(); val out = mutableListOf<ByteArray>()
+        (s1.filterIndexed { i, _ -> i != 2 } + s2).forEach { s -> d.feed(s)?.let { out.add(it) } }
+        expect("ble gap drops partial frame", out.size == 1 && out[0].contentEquals(f2) && d.dropped >= 1)
+    }
+    run {   // Noise frames over BLE segments end to end (loopback)
+        val podB = SecureChannel(false, rst, SecureChannel.fingerprint(Prim.pub(ist)))
+        val phoneB = SecureChannel(true, ist, SecureChannel.fingerprint(Prim.pub(rst)))
+        val toPod = Desegmenter(); val toPhone = Desegmenter(); var seqA = 0; var seqB = 0
+        fun p2pod(f: ByteArray): ByteArray { var r: ByteArray? = null; BleFraming.segment(f, 23, seqA).also { seqA += it.size }.forEach { s -> toPod.feed(s)?.let { r = it } }; return r!! }
+        fun pod2p(f: ByteArray): ByteArray { var r: ByteArray? = null; BleFraming.segment(f, 23, seqB).also { seqB += it.size }.forEach { s -> toPhone.feed(s)?.let { r = it } }; return r!! }
+        podB.readHandshake(p2pod(phoneB.writeHandshake())); phoneB.readHandshake(pod2p(podB.writeHandshake())); podB.readHandshake(p2pod(phoneB.writeHandshake()))
+        expect("noise over ble handshake", podB.ready && phoneB.ready)
+        val msg = ByteArray(5000) { (it % 97).toByte() }
+        expect("noise over ble message", podB.decrypt(p2pod(phoneB.encrypt(msg))).contentEquals(msg))
+    }
+
+    // ---- Thermal live view pixels (shared with oiris/ui/glasses.thermal_image) ----
+    val tv = (Json.decode(File(root, "tests/vectors/thermal_render.json").readText()) as Map<String, Any?>)["cases"] as List<Map<String, Any?>>
+    for (c in tv) {
+        val cel = (c["celsius"] as List<Any?>).map { (it as Number).toDouble() }.toDoubleArray()
+        val g = (c["gray"] as List<Any?>).map { (it as Number).toInt() }
+        val rgb = (c["rgb"] as List<Any?>).map { (it as Number).toInt() }
+        expect("thermal gray ${c["h"]}x${c["w"]}", ThermalRender.gray(cel).toList() == g)
+        expect("thermal colour ${c["h"]}x${c["w"]}", ThermalRender.rgb(cel).toList() == rgb)
+        val a = ThermalRender.argb(cel, false)
+        expect("thermal argb gray ${c["h"]}x${c["w"]}", a.size == g.size && a.indices.all { (a[it] and 0xFF) == g[it] && (a[it] ushr 24) == 0xFF })
+    }
+
+    // ---- Front-camera eye features (shared with oiris/features/eye.py) ----
+    val ev = Json.decode(File(root, "tests/vectors/eye_android.json").readText()) as Map<String, Any?>
+    for (c in ev["blinks"] as List<Map<String, Any?>>) {
+        val o = (c["openness"] as List<Any?>).map { (it as Number).toDouble() }.toDoubleArray()
+        val exp = (c["blinks"] as List<List<Any?>>).map { (it[0] as Number).toInt() to (it[1] as Number).toInt() }
+        expect("blinks fps=${c["fps"]}", EyeFeatures.blinks(o, (c["fps"] as Number).toDouble()) == exp)
+    }
+    for (c in ev["pupil"] as List<Map<String, Any?>>) {
+        val roi = (c["roi"] as List<Any?>).map { (it as Number).toDouble() }.toDoubleArray()
+        val (d, q) = EyeFeatures.pupilDiameter(roi, (c["w"] as Number).toInt(), (c["h"] as Number).toInt())
+        expect("pupil diameter ${c["diameter"]}", kotlin.math.abs(d - (c["diameter"] as Number).toDouble()) < 1e-9)
+        expect("pupil quality ${c["quality"]}", kotlin.math.abs(q - (c["quality"] as Number).toDouble()) < 1e-9)
+    }
+
+    // ---- Scan-rate limit, GPS policy, mic level, timeline ----
+    var now = 0L; val lim = ScanRateLimiter(clock = { now })
+    val allowed = (0 until 8).count { now = it * 1000L; lim.tryStart() }
+    expect("<=5 scan starts per 30 s", allowed == 5 && lim.waitMs() == 30_000L - 7_000L)
+    now = 30_000L; expect("scan allowed after window", lim.tryStart())
+    var burst = 0; now = 100_000L; repeat(100) { if (lim.tryStart()) burst++ }
+    expect("burst capped", burst == 5)
+    expect("gps ok", GpsPolicy.classify(38.25, -85.76, 8f, 1_000).fix == "gps")
+    expect("gps coarse", GpsPolicy.classify(38.25, -85.76, 60f, 1_000).fix == "gps_coarse")
+    expect("gps stale -> no_fix", GpsPolicy.classify(38.25, -85.76, 8f, 600_000).let { it.fix == "no_fix" && it.lat == null })
+    expect("gps inaccurate -> no_fix", GpsPolicy.classify(38.25, -85.76, 500f, 1_000).fix == "no_fix")
+    expect("gps none -> no_fix", GpsPolicy.classify(null, null, null, null).fix == "no_fix")
+    expect("mic silence", MicLevel.dbfs(ShortArray(256)) == -120.0)
+    expect("mic full scale ~0 dBFS", kotlin.math.abs(MicLevel.dbfs(ShortArray(256) { if (it % 2 == 0) 32767 else -32768 })) < 0.01)
+    val sw = listOf(Sweep("a", "home", 10.0, 20.0, "0", "clear"), Sweep("b", "home", 30.0, 40.0, "2", "signatures"), Sweep("c", "shop", 50.0, 60.0, "1", "signatures"))
+    expect("timeline newest first", Timeline.ordered(sw).map { it.id } == listOf("c", "b", "a"))
+    expect("timeline new since review", Timeline.newSince(sw, 35.0).map { it.id } == listOf("c", "b"))
+
     println("core checks: $passed passed, $failures failed")
     if (failures > 0) kotlin.system.exitProcess(1)
 }

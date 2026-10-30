@@ -23,6 +23,10 @@ python3 -m oiris.cli selftest --scenario camera_lens --steps 3 --expect golden/e
 if [[ "$OS" == "darwin" ]]; then
   # unsigned .app bundle (offline wheels inside); zipped with ditto to keep bundle metadata
   python3 scripts/make_macos_app.py --wheel "$(ls "$OUT"/o_iris-*.whl)" --out "$OUT" --commit "$COMMIT" --bundle-deps
+  # M-15 Keychain biometric gate helper (Swift; LocalAuthentication + Security frameworks)
+  swiftc -O macos/keychain_gate/main.swift -o "$OUT/O Iris.app/Contents/MacOS/keychain-gate"
+  "$OUT/O Iris.app/Contents/MacOS/keychain-gate" status      # runs on CI; no biometrics there -> {"biometry": false}
+  OIRIS_MAC_GATE_HELPER="$OUT/O Iris.app/Contents/MacOS/keychain-gate" python3 -m pytest -q tests/test_mac_gate.py
   ditto -c -k --keepParent "$OUT/O Iris.app" "$OUT/o-iris-$COMMIT-macos-app-unsigned.zip"
   rm -rf "$OUT/O Iris.app"
 fi

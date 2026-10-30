@@ -57,3 +57,4 @@ One ADR per settled default from the v2 spec decision log (D-xx), plus project A
 | [ADR-0051](0051-live-eye-roi-dark-pupil.md) | M-01 | Live eye ROI: dark-pupil + glint, landmarks when available | Accepted |
 | [ADR-0052](0052-c7-tokens-and-simulated-glasses.md) | C7/G | Design tokens v0.1 and simulated glasses renderer | Accepted |
 | [ADR-0053](0053-kotlin-noise-port-and-phone-enrollment.md) | M-04/M-16 | Kotlin Noise port, phone enrollment over the link, JVM checks | Accepted |
+| [ADR-0054](0054-audit-gap-build.md) | M-01..M-16 | Audit gap build: digits, key rotation, ArUco, registries, real-signal eye test, Keychain gate, BLE link | Accepted |

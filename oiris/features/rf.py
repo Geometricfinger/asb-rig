@@ -5,15 +5,35 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 import numpy as np
 
-# Bluetooth SIG company identifiers (public assigned numbers; small excerpt)
-COMPANY_TYPES = {0x004C: "phone_or_wearable", 0x0006: "pc_or_peripheral", 0x0075: "phone_or_wearable",
-                 0x00E0: "phone_or_wearable", 0x02E5: "iot_module", 0x0059: "iot_module",
-                 0x0157: "fitness_wearable", 0x038F: "smart_home"}
+def _load_tables() -> dict:
+    import json
+    from importlib import resources
+    return json.loads(resources.files("oiris.features").joinpath("rf_tables.json").read_text(encoding="utf-8"))
+
+
+_T = _load_tables()
+RF_TABLE_SOURCES: dict = _T["sources"]
+# Bluetooth SIG company identifiers -> coarse type (IDs from the SIG Assigned Numbers registry;
+# types are our curation). Regenerate with scripts/make_rf_tables.py.
+COMPANY_TYPES: dict[int, str] = {int(k, 16): v["type"] for k, v in _T["company_types"].items()}
 UUID_TYPES = {"180d": "fitness_wearable", "fe9f": "beacon", "feaa": "beacon", "1812": "pc_or_peripheral",
-              "180f": "battery_device", "fd6f": "phone_or_wearable"}
+              "180f": "battery_device", "fd6f": "phone_or_wearable", "1808": "medical_device", "1810": "medical_device",
+              "181f": "medical_device", "1816": "fitness_wearable", "1818": "fitness_wearable", "1826": "fitness_wearable",
+              "1822": "medical_device", "110b": "audio_device", "184e": "audio_device", "1850": "audio_device"}
 TYPES = {"phone_or_wearable", "pc_or_peripheral", "iot_module", "fitness_wearable", "beacon", "smart_home",
-         "access_point", "camera_like", "battery_device", "unknown"}
-CAMERA_OUI_HINTS: set[str] = set()   # populated by site config; empty by default (no vendor lists shipped)
+         "access_point", "camera_like", "battery_device", "audio_device", "medical_device", "vehicle", "unknown"}
+# IEEE MA-L OUIs of organisations whose main line is IP/home security cameras (hint only).
+# Site config may add more with add_camera_ouis().
+CAMERA_OUI_HINTS: set[str] = set(_T["camera_ouis"])
+
+
+def normalise_oui(mac_or_oui: str) -> str:
+    h = "".join(c for c in mac_or_oui.lower() if c in "0123456789abcdef")[:6]
+    return ":".join(h[i:i + 2] for i in (0, 2, 4)) if len(h) == 6 else ""
+
+
+def add_camera_ouis(ouis) -> None:
+    CAMERA_OUI_HINTS.update(o for o in (normalise_oui(x) for x in ouis) if o)
 
 
 def adv_features(times_s: list[float], tx_power: list[int | None], rssi: list[int], payload_len: list[int]) -> dict:
@@ -69,7 +89,7 @@ class DriftDetector:
 def device_type(company_id: int | None = None, service_uuids: list[str] | None = None, is_ap: bool = False,
                 oui: str | None = None) -> str:
     if is_ap:
-        return "camera_like" if oui and oui.lower() in CAMERA_OUI_HINTS else "access_point"
+        return "camera_like" if oui and normalise_oui(oui) in CAMERA_OUI_HINTS else "access_point"
     for u in service_uuids or []:
         u = u.lower(); t = UUID_TYPES.get(u[4:8] if len(u) > 8 else u[-4:])
         if t:

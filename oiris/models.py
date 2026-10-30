@@ -1,7 +1,7 @@
 """Model port (C9). A model package = manifest + weights file. Loading is guarded: on any
 failure the slot keeps its last-good model or becomes disabled; it never raises."""
 from __future__ import annotations
-import hashlib, json, logging
+import hashlib, hmac, json, logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
@@ -51,7 +51,7 @@ def validate_manifest(m: dict, root: Path) -> None:
     if list(m["output_range"]) != [0, 1]:
         raise ValueError("output_range must be [0,1]")
     f = root / m["file"]
-    if hashlib.sha256(f.read_bytes()).hexdigest() != m["sha256"]:
+    if not hmac.compare_digest(hashlib.sha256(f.read_bytes()).hexdigest(), str(m["sha256"])):
         raise ValueError("model file hash mismatch")
 
 

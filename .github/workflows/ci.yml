@@ -25,9 +25,16 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: pip install -e ".[dev]"
+      - name: flite (CMU, BSD-style) for the real M-06 speech test
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq flite
+      - name: real eye-tracker reference recordings for M-01 (pinned, sha256-checked, CC BY 4.0 / MIT)
+        run: python scripts/fetch_eye_reference_data.py
       - run: ruff check oiris tests scripts
       - run: mypy oiris
       - run: python -m pytest -q
+        env:
+          OIRIS_REQUIRE_FLITE: "1"
+          OIRIS_REQUIRE_REAL_EYE: "1"
       - run: python scripts/license_check.py
       - name: headless golden suite (E-23)
         run: |
@@ -57,7 +64,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.7"
-      - run: pip install -e .
+      - run: pip install -e ".[dev]"
       - run: scripts/build_all.sh
       - uses: actions/upload-artifact@v4
         with:

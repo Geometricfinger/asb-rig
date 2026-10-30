@@ -4,7 +4,7 @@ CONFIRMED: needs an operator confirmation token; barges in and repeats until ack
 TTS backends sit behind the `tts` port; GPL engines (Piper, eSpeak NG) are excluded."""
 from __future__ import annotations
 import collections, time
-from typing import Callable, Protocol
+from typing import Any, Callable, Protocol
 
 from ..guard.phrases import render
 from ..schema import Level
@@ -31,23 +31,47 @@ class NullTts:
 
 
 class FliteTts:
-    """Flite (BSD-style) as a subprocess on the Pi."""
+    """Flite (CMU, BSD-style licence; Debian package `flite`) as a subprocess on the Pi/host.
+    `out_dir` set -> every utterance is synthesised to a WAV there instead of the speaker
+    (used by tests and headless runs, where there is no audio device)."""
     offline = True
 
-    def __init__(self):
+    def __init__(self, voice: str | None = None, out_dir: str | None = None, binary: str = "flite"):
         import shutil
-        if not shutil.which("flite"):
+        self.bin = shutil.which(binary)
+        if not self.bin:
             raise RuntimeError("flite not installed")
-        self._p = None
+        self.voice, self.out_dir = voice, out_dir
+        self._p: Any = None
+        self.files: list[str] = []
+
+    def _cmd(self, text: str, out: str | None) -> list[str]:
+        cmd = [str(self.bin)] + (["-voice", self.voice] if self.voice else []) + ["-t", text]
+        return cmd + (["-o", out] if out else [])
+
+    def synthesize(self, text: str, path: str, timeout_s: float = 30.0) -> str:
+        """Blocking synthesis to a 16-bit PCM WAV file; returns the path."""
+        import subprocess
+        subprocess.run(self._cmd(text, path), check=True, timeout=timeout_s, capture_output=True)
+        return path
 
     def speak(self, text: str) -> None:
-        import subprocess
+        import os, subprocess
         self.stop()
-        self._p = subprocess.Popen(["flite", "-t", text])
+        out = None
+        if self.out_dir:
+            out = os.path.join(self.out_dir, f"utt{len(self.files):04d}.wav")
+            self.files.append(out)
+        self._p = subprocess.Popen(self._cmd(text, out), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    def wait(self, timeout_s: float = 30.0) -> None:
+        if self._p:
+            self._p.wait(timeout=timeout_s)
 
     def stop(self) -> None:
         if self._p and self._p.poll() is None:
             self._p.terminate()
+            self._p.wait(timeout=5)
 
 
 class VoiceOutput:

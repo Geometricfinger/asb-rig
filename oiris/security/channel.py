@@ -1,6 +1,7 @@
 """Pod<->phone encrypted channel: Noise_XX_25519_ChaChaPoly_BLAKE2s with rekey every
 1,000 messages or 10 minutes (whichever first). Transport-agnostic (BLE GATT on device;
-in-memory pipes in tests). Static keys are verified against the QR-paired fingerprint."""
+in-memory pipes in tests). Static keys are verified against the QR-paired fingerprint and
+are refused once older than 90 days (D-22): rotate with keys.StaticKeyManager and re-pair."""
 from __future__ import annotations
 import hashlib, time
 from noise.connection import NoiseConnection, Keypair
@@ -27,7 +28,12 @@ def fingerprint(static_pub: bytes) -> str:
 
 class SecureChannel:
     def __init__(self, initiator: bool, static_priv: bytes, expected_peer_fp: str,
-                 rekey_messages: int = 1000, rekey_seconds: float = 600, clock=time.monotonic):
+                 rekey_messages: int = 1000, rekey_seconds: float = 600, clock=time.monotonic,
+                 static_created: float | None = None, wall_clock=time.time):
+        if static_created is not None:
+            from .keys import static_key_status
+            if static_key_status(static_created, wall_clock()) == "expired":
+                raise ChannelError("static key older than 90 days: rotate and re-pair")
         self.n = NoiseConnection.from_name(PROTOCOL)
         self.n.set_as_initiator() if initiator else self.n.set_as_responder()
         self.n.set_keypair_from_private_bytes(Keypair.STATIC, static_priv)
@@ -136,3 +142,10 @@ class Reassembler:
             return None
         out = bytes(self.buf); self.buf.clear()
         return out
+
+
+def from_pairing(initiator: bool, rec, **kw) -> SecureChannel:
+    """Build a channel from a keys.PairingRecord; refuses unpaired or expired keys."""
+    if rec.peer_fp is None:
+        raise ChannelError("not paired: scan the peer QR code")
+    return SecureChannel(initiator, rec.static_priv, rec.peer_fp, static_created=rec.created, **kw)

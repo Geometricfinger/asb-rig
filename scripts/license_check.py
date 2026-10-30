@@ -12,7 +12,7 @@ ALLOW = re.compile(r"\b(MIT|BSD|Apache|ISC|PSF|Python Software Foundation|MPL|Mo
 DENY = re.compile(r"\b(AGPL|GPL|Affero|Non-?Commercial|NC-|SSPL|BUSL|research only)\b", re.I)
 # LGPL is only acceptable with dynamic linking / an exception; none are used by the Python runtime.
 RUNTIME = ["numpy", "cryptography", "PyNaCl", "noiseprotocol", "cffi", "pycparser"]
-OPTIONAL = ["bleak", "pyserial", "opencv-python-headless", "adafruit-circuitpython-mlx90640", "gpiozero"]
+OPTIONAL = ["bleak", "bless", "pyserial", "opencv-python-headless", "adafruit-circuitpython-mlx90640", "gpiozero"]
 KNOWN = {  # where package metadata is ambiguous, the verified license is recorded here
     "cryptography": "Apache-2.0 OR BSD-3-Clause", "numpy": "BSD-3-Clause", "PyNaCl": "Apache-2.0",
     "noiseprotocol": "MIT", "cffi": "MIT", "pycparser": "BSD-3-Clause",

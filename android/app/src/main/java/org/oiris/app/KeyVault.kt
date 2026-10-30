@@ -25,7 +25,10 @@ class KeyVault(private val ctx: Context) {
             .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
             .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
             .setUserAuthenticationRequired(true)
-            .setUserAuthenticationParameters(0, KeyProperties.AUTH_BIOMETRIC_STRONG)
+            .apply {   // per-use strong biometric; API 29 has only the (equivalent) legacy call
+                if (android.os.Build.VERSION.SDK_INT >= 30) setUserAuthenticationParameters(0, KeyProperties.AUTH_BIOMETRIC_STRONG)
+                else @Suppress("DEPRECATION") setUserAuthenticationValidityDurationSeconds(-1)
+            }
             .setInvalidatedByBiometricEnrollment(true)
             .setIsStrongBoxBacked(strongBox)
             .build()

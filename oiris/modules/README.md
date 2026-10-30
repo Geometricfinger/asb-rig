@@ -1,2 +1,4 @@
 # oiris.modules — feature modules
 `voice` (M-06 tiers, offline TTS port), `golden` (M-09 manifest C5 + M-12 feedback loop), `fingerprint` (M-03 tracker), `liveness` (M-02 indicators, hypothesis), `appgate` (M-15 host side). `face_match` (M-16, optional, off by default, never imported until enabled through `face_match_gate`; see `face_match/README.md`). Each is independent of the others and testable alone.
+
+`liveness.DigitChallenge` (M-02): spoken-digit challenge (random digits, single-use nonce, timeout, latency window, replay rejection) → `S_voice`. `voice.FliteTts` can synthesise to WAV (`out_dir`/`synthesize`) and is run for real in CI. `mac_gate` (M-15): Python side of the Swift Keychain + Touch ID helper in `macos/keychain_gate`; `AppGate.enroll_biometric/unlock_biometric` open a KeyStore key slot (cancel is not a failed attempt; passphrase always still works).

@@ -1,0 +1,4 @@
+# Keychain biometric gate helper (M-15)
+Swift CLI used by `oiris/modules/mac_gate.py`. Commands: `status`, `store` (64 hex chars on stdin), `load [--reason R]`, `delete`, each with `--service/--account`. Biometrics only (no password fallback). Exit codes: 0 ok, 2 cancelled, 3 unavailable, 4 not found, 5 auth failed, 6 error.
+
+Build: `swiftc -O main.swift -o keychain-gate` (CI builds it into `O Iris.app/Contents/MacOS/` and runs `status`). Binding: signed builds with a keychain-access-group entitlement store the slot secret with `SecAccessControl(.biometryCurrentSet)` in the data-protection keychain (`keychain-acl`); unsigned builds fall back to a login-keychain item released only after a LocalAuthentication check (`la-check`, weaker; reported to the caller). Never run with a real fingerprint yet.

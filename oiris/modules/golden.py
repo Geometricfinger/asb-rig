@@ -3,7 +3,7 @@ Manifest: per-clip SHA-256, label (object type only), source tier, consent ref, 
 The frozen test split never receives new clips; confirmed sightings enter quarantine,
 a reviewer promotes them to the growth set (train/dev only)."""
 from __future__ import annotations
-import hashlib, json
+import hashlib, hmac, json
 from dataclasses import dataclass, field, asdict
 from pathlib import Path
 
@@ -75,7 +75,7 @@ class Manifest:
         bad = []
         for c in self.clips:
             p = root / c.path
-            if not p.exists() or hashlib.sha256(p.read_bytes()).hexdigest() != c.sha256:
+            if not p.exists() or not hmac.compare_digest(hashlib.sha256(p.read_bytes()).hexdigest(), c.sha256):
                 bad.append(c.clip_id)
         if self.frozen_test_hash and self.test_hash() != self.frozen_test_hash:
             bad.append("<frozen test split changed>")

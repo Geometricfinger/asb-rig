@@ -15,7 +15,7 @@ import android.os.Looper
 class FallbackNode(private val ctx: Context, private val onScores: (List<Score>) -> Unit) {
     private val near = mutableSetOf<String>()
     private val handler = Handler(Looper.getMainLooper())
-    private var lastStart = 0L
+    val limiter = org.oiris.core.ScanRateLimiter()      // Android: <=5 scan starts per 30 s
 
     private val cb = object : ScanCallback() {
         override fun onScanResult(type: Int, r: ScanResult) {
@@ -25,9 +25,7 @@ class FallbackNode(private val ctx: Context, private val onScores: (List<Score>)
 
     @SuppressLint("MissingPermission")
     fun startBle() {
-        val now = System.currentTimeMillis()
-        if (now - lastStart < 6_000) return          // <=5 starts per 30 s
-        lastStart = now
+        if (!limiter.tryStart()) return              // enforced before the OS silently throttles us
         val bm = ctx.getSystemService(BluetoothManager::class.java) ?: return
         val scanner = bm.adapter?.bluetoothLeScanner ?: return
         scanner.startScan(null, ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_POWER).build(), cb)

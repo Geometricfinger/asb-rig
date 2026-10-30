@@ -1,0 +1,412 @@
+{
+ "sources": {
+  "company_identifiers": "Bluetooth SIG Assigned Numbers (company_identifiers.yaml), bitbucket.org/bluetooth-SIG/public",
+  "oui": "IEEE Registration Authority MA-L public listing, standards-oui.ieee.org/oui/oui.csv",
+  "retrieved": "2026-10-29",
+  "note": "Identifier->organisation facts from the registries; device types are O Iris's own coarse curation."
+ },
+ "company_types": {
+  "0x0002": {
+   "type": "pc_or_peripheral",
+   "org": "Intel Corp."
+  },
+  "0x0006": {
+   "type": "pc_or_peripheral",
+   "org": "Microsoft"
+  },
+  "0x0008": {
+   "type": "phone_or_wearable",
+   "org": "Motorola"
+  },
+  "0x0009": {
+   "type": "iot_module",
+   "org": "Infineon Technologies AG"
+  },
+  "0x000D": {
+   "type": "iot_module",
+   "org": "Texas Instruments Inc."
+  },
+  "0x000F": {
+   "type": "iot_module",
+   "org": "Broadcom Corporation"
+  },
+  "0x004C": {
+   "type": "phone_or_wearable",
+   "org": "Apple, Inc."
+  },
+  "0x0057": {
+   "type": "audio_device",
+   "org": "Harman International Industries, Inc."
+  },
+  "0x0059": {
+   "type": "iot_module",
+   "org": "Nordic Semiconductor ASA"
+  },
+  "0x005D": {
+   "type": "iot_module",
+   "org": "Realtek Semiconductor Corporation"
+  },
+  "0x006B": {
+   "type": "fitness_wearable",
+   "org": "Polar Electro OY"
+  },
+  "0x0075": {
+   "type": "phone_or_wearable",
+   "org": "Samsung Electronics Co. Ltd."
+  },
+  "0x0087": {
+   "type": "fitness_wearable",
+   "org": "Garmin International, Inc."
+  },
+  "0x009E": {
+   "type": "audio_device",
+   "org": "Bose Corporation"
+  },
+  "0x009F": {
+   "type": "fitness_wearable",
+   "org": "Suunto Oy"
+  },
+  "0x00C4": {
+   "type": "phone_or_wearable",
+   "org": "LG Electronics"
+  },
+  "0x00CC": {
+   "type": "audio_device",
+   "org": "Beats Electronics"
+  },
+  "0x00D0": {
+   "type": "medical_device",
+   "org": "Dexcom, Inc."
+  },
+  "0x00D1": {
+   "type": "fitness_wearable",
+   "org": "Polar Electro Europe B.V."
+  },
+  "0x00D7": {
+   "type": "iot_module",
+   "org": "Qualcomm Technologies, Inc."
+  },
+  "0x00E0": {
+   "type": "phone_or_wearable",
+   "org": "Google"
+  },
+  "0x0103": {
+   "type": "audio_device",
+   "org": "Bang & Olufsen A/S"
+  },
+  "0x011F": {
+   "type": "vehicle",
+   "org": "Volkswagen AG"
+  },
+  "0x012D": {
+   "type": "phone_or_wearable",
+   "org": "Sony Corporation"
+  },
+  "0x0131": {
+   "type": "iot_module",
+   "org": "Cypress Semiconductor"
+  },
+  "0x0157": {
+   "type": "fitness_wearable",
+   "org": "Anhui Huami Information Technology Co., Ltd."
+  },
+  "0x0171": {
+   "type": "smart_home",
+   "org": "Amazon.com Services LLC"
+  },
+  "0x018E": {
+   "type": "phone_or_wearable",
+   "org": "Google LLC"
+  },
+  "0x01AB": {
+   "type": "phone_or_wearable",
+   "org": "Meta Platforms, Inc."
+  },
+  "0x01B5": {
+   "type": "smart_home",
+   "org": "Nest Labs Inc."
+  },
+  "0x01DA": {
+   "type": "pc_or_peripheral",
+   "org": "Logitech International SA"
+  },
+  "0x01F9": {
+   "type": "medical_device",
+   "org": "Medtronic Inc."
+  },
+  "0x0211": {
+   "type": "iot_module",
+   "org": "Telink Semiconductor Co. Ltd"
+  },
+  "0x022B": {
+   "type": "vehicle",
+   "org": "Tesla, Inc."
+  },
+  "0x02B2": {
+   "type": "fitness_wearable",
+   "org": "Oura Health Oy"
+  },
+  "0x02C5": {
+   "type": "pc_or_peripheral",
+   "org": "Lenovo (Singapore) Pte Ltd."
+  },
+  "0x02E5": {
+   "type": "iot_module",
+   "org": "Espressif Systems (Shanghai) Co., Ltd."
+  },
+  "0x02FF": {
+   "type": "iot_module",
+   "org": "Silicon Laboratories"
+  },
+  "0x0304": {
+   "type": "fitness_wearable",
+   "org": "Oura Health Ltd"
+  },
+  "0x038F": {
+   "type": "phone_or_wearable",
+   "org": "Xiaomi Inc."
+  },
+  "0x03BB": {
+   "type": "medical_device",
+   "org": "Abbott"
+  },
+  "0x03C5": {
+   "type": "medical_device",
+   "org": "Abbott Medical"
+  },
+  "0x03FF": {
+   "type": "fitness_wearable",
+   "org": "Withings"
+  },
+  "0x041E": {
+   "type": "pc_or_peripheral",
+   "org": "Dell Computer Corporation"
+  },
+  "0x04AD": {
+   "type": "audio_device",
+   "org": "Shure Inc"
+  },
+  "0x0553": {
+   "type": "pc_or_peripheral",
+   "org": "Nintendo Co., Ltd."
+  },
+  "0x055D": {
+   "type": "pc_or_peripheral",
+   "org": "Valve Corporation"
+  },
+  "0x058E": {
+   "type": "phone_or_wearable",
+   "org": "Meta Platforms Technologies, LLC"
+  },
+  "0x05A7": {
+   "type": "smart_home",
+   "org": "Sonos Inc"
+  },
+  "0x060F": {
+   "type": "smart_home",
+   "org": "Signify Netherlands B.V."
+  },
+  "0x067C": {
+   "type": "beacon",
+   "org": "Tile, Inc."
+  },
+  "0x0723": {
+   "type": "vehicle",
+   "org": "Ford Motor Company"
+  },
+  "0x072F": {
+   "type": "phone_or_wearable",
+   "org": "OnePlus Electronics (Shenzhen) Co., Ltd."
+  },
+  "0x0768": {
+   "type": "fitness_wearable",
+   "org": "Peloton Interactive Inc."
+  },
+  "0x079A": {
+   "type": "phone_or_wearable",
+   "org": "GuangDong Oppo Mobile Telecommunications Corp., Ltd."
+  },
+  "0x07C9": {
+   "type": "audio_device",
+   "org": "Skullcandy, Inc."
+  },
+  "0x07D0": {
+   "type": "smart_home",
+   "org": "Hangzhou Tuya Information  Technology Co., Ltd"
+  },
+  "0x0837": {
+   "type": "phone_or_wearable",
+   "org": "vivo Mobile Communication Co., Ltd."
+  },
+  "0x0870": {
+   "type": "smart_home",
+   "org": "Wyze Labs, Inc"
+  }
+ },
+ "camera_ouis": {
+  "00:02:d1": "Vivotek, Inc.",
+  "00:03:c5": "Mobotix AG",
+  "00:09:18": "SAMSUNG TECHWIN CO.,LTD",
+  "00:40:8c": "Axis Communications AB",
+  "00:b4:63": "Ring LLC",
+  "00:bc:99": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "04:03:12": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "04:ee:cd": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "08:3b:c1": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "08:54:11": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "08:a1:89": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "08:cc:81": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "08:ed:ed": "Zhejiang Dahua Technology Co., Ltd.",
+  "0c:75:d2": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "0c:a6:4c": "Hangzhou Ezviz Software Co.,Ltd.",
+  "10:12:fb": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "14:a7:8b": "Zhejiang Dahua Technology Co., Ltd.",
+  "14:ba:88": "Zhejiang Uniview Technologies Co.,Ltd.",
+  "18:68:cb": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "18:7f:88": "Ring LLC",
+  "18:80:25": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "20:bb:bc": "Hangzhou Ezviz Software Co.,Ltd.",
+  "24:0f:9b": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "24:28:fd": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "24:2b:d6": "Ring LLC",
+  "24:32:ae": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "24:48:45": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "24:52:6a": "Zhejiang Dahua Technology Co., Ltd.",
+  "24:b1:05": "Prama Hikvision India Private Limited",
+  "28:57:be": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "2c:a5:9c": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "30:dd:aa": "ZHEJIANG DAHUA TECHNOLOGYCO.,LTD",
+  "34:09:62": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "34:3e:a4": "Ring LLC",
+  "34:c6:dd": "Hangzhou Ezviz Software Co.,Ltd.",
+  "38:af:29": "Zhejiang Dahua Technology Co., Ltd.",
+  "38:f2:5d": "Hangzhou Ezviz Software Co.,Ltd.",
+  "3c:1b:f8": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "3c:e3:6b": "Zhejiang Dahua Technology Co., Ltd.",
+  "3c:ef:8c": "Zhejiang Dahua Technology Co., Ltd.",
+  "40:7a:a4": "ZHEJIANG DAHUA TECHNOLOGYCO.,LTD",
+  "40:ac:bf": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "40:b5:70": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "44:19:b6": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "44:47:cc": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "44:a6:42": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "44:b4:23": "HANWHA VISION VIETNAM COMPANY LIMITED",
+  "48:62:64": "Arlo Technology",
+  "48:78:5b": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "48:ea:63": "Zhejiang Uniview Technologies Co., Ltd.",
+  "4c:11:bf": "Zhejiang Dahua Technology Co., Ltd.",
+  "4c:1f:86": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "4c:62:df": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "4c:99:e8": "ZHEJIANG DAHUA TECHNOLOGYCO.,LTD",
+  "4c:bd:8f": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "4c:f5:dc": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "50:e4:67": "Ring LLC",
+  "50:e5:38": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "54:8c:81": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "54:c4:15": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "54:d6:0d": "Hangzhou Ezviz Software Co.,Ltd.",
+  "54:e0:19": "Ring LLC",
+  "58:03:fb": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "58:50:ed": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "58:8f:cf": "Hangzhou Ezviz Software Co.,Ltd.",
+  "5c:34:5b": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "5c:47:5e": "Ring LLC",
+  "5c:f5:1a": "Zhejiang Dahua Technology Co., Ltd.",
+  "64:24:4d": "Hangzhou Ezviz Software Co.,Ltd.",
+  "64:9a:63": "Ring LLC",
+  "64:db:8b": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "64:f2:fb": "Hangzhou Ezviz Software Co.,Ltd.",
+  "64:fd:29": "Zhejiang Dahua Technology Co., Ltd.",
+  "68:6d:bc": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "6c:1c:71": "Zhejiang Dahua Technology Co., Ltd.",
+  "6c:f1:7e": "Zhejiang Uniview Technologies Co.,Ltd.",
+  "70:1a:d5": "Avigilon Alta",
+  "74:3f:c2": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "74:c9:29": "Zhejiang Dahua Technology Co., Ltd.",
+  "78:a6:a0": "Hangzhou Ezviz Software Co.,Ltd.",
+  "78:c1:ae": "Hangzhou Ezviz Software Co.,Ltd.",
+  "80:48:9f": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "80:7c:62": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "80:be:af": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "80:f5:ae": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "84:94:59": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "84:9a:40": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "88:26:3f": "Zhejiang Uniview Technologies Co.,Ltd.",
+  "88:de:39": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "8c:22:d2": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "8c:e7:48": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "8c:e9:b4": "Zhejiang Dahua Technology Co., Ltd.",
+  "90:02:a9": "Zhejiang Dahua Technology Co., Ltd.",
+  "90:48:6c": "Ring LLC",
+  "94:e1:ac": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "94:ec:13": "Hangzhou Ezviz Software Co.,Ltd.",
+  "98:8b:0a": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "98:9d:e5": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "98:df:82": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "98:f1:12": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "98:f9:cc": "Zhejiang Dahua Technology Co., Ltd.",
+  "9c:14:63": "Zhejiang Dahua Technology Co., Ltd.",
+  "9c:76:13": "Ring LLC",
+  "a0:bd:1d": "Zhejiang Dahua Technology Co., Ltd.",
+  "a0:ff:0c": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "a4:11:62": "Arlo Technology",
+  "a4:14:37": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "a4:29:02": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "a4:4b:d9": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "a4:a4:59": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "a4:d5:c2": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "ac:1c:26": "Hangzhou Ezviz Software Co.,Ltd.",
+  "ac:9f:c3": "Ring LLC",
+  "ac:b9:2f": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "ac:cb:51": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "ac:cc:8e": "Axis Communications AB",
+  "b0:ff:0d": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "b4:4c:3b": "Zhejiang Dahua Technology Co., Ltd.",
+  "b4:a3:82": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "b8:a4:4f": "Axis Communications AB",
+  "bc:29:78": "Prama Hikvision India Private Limited",
+  "bc:32:5f": "Zhejiang Dahua Technology Co., Ltd.",
+  "bc:5e:33": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "bc:9b:5e": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "bc:ad:28": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "bc:ba:c2": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "c0:39:5a": "Zhejiang Dahua Technology Co., Ltd.",
+  "c0:51:7e": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "c0:56:e3": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "c0:6d:ed": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "c4:2f:90": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "c4:79:05": "Zhejiang Uniview Technologies Co.,Ltd.",
+  "c4:aa:c4": "Zhejiang Dahua Technology Co., Ltd.",
+  "c4:db:ad": "Ring LLC",
+  "c8:a7:02": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "cc:13:f3": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "cc:3b:fb": "Ring LLC",
+  "d4:43:0e": "Zhejiang Dahua Technology Co., Ltd.",
+  "d4:e8:53": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "dc:07:f8": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "dc:d2:6a": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "e0:2e:fe": "Zhejiang Dahua Technology Co., Ltd.",
+  "e0:50:8b": "Zhejiang Dahua Technology Co., Ltd.",
+  "e0:ba:ad": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "e0:ca:3c": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "e0:df:13": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "e4:24:6c": "Zhejiang Dahua Technology Co., Ltd.",
+  "e4:30:22": "Hanwha Vision VietNam",
+  "e4:d5:8b": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "e8:27:25": "Axis Communications AB",
+  "e8:a0:ed": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "ec:71:db": "Reolink Innovation Limited",
+  "ec:97:e0": "Hangzhou Ezviz Software Co.,Ltd.",
+  "ec:a9:71": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "ec:c8:9c": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "f4:70:18": "Hangzhou Ezviz Software Co.,Ltd.",
+  "f4:b1:c2": "Zhejiang Dahua Technology Co., Ltd.",
+  "f8:4d:fc": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "f8:ce:07": "ZHEJIANG DAHUA TECHNOLOGYCO.,LTD",
+  "fc:24:22": "Hangzhou Ezviz Software Co.,Ltd.",
+  "fc:5f:49": "Zhejiang Dahua Technology Co., Ltd.",
+  "fc:9c:98": "Arlo Technology",
+  "fc:9f:fd": "Hangzhou Hikvision Digital Technology Co.,Ltd.",
+  "fc:b6:9d": "Zhejiang Dahua Technology Co., Ltd."
+ }
+}

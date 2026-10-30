@@ -1,6 +1,6 @@
 """Kill switch, panic gesture and failed-unlock wipe (D-23). Crypto-erase only."""
 from __future__ import annotations
-import time
+import hmac, time
 from typing import Callable
 
 from nacl.signing import VerifyKey
@@ -60,7 +60,7 @@ class PanicController:
         return f"failed {self.failed_unlocks}/{self.fail_limit}"
 
     def remote_wipe(self, command: bytes, signature: bytes, phone_key: VerifyKey, expect_nonce: bytes) -> bool:
-        if not command.startswith(b"ASB-WIPE:") or command[9:] != expect_nonce:
+        if not command.startswith(b"ASB-WIPE:") or not hmac.compare_digest(command[9:], expect_nonce):
             return False
         try:
             phone_key.verify(command, signature)

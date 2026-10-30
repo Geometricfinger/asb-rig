@@ -21,6 +21,7 @@ Policy (R-05): allowed MIT, BSD-2/3, Apache-2.0, ISC, PSF, MPL-2.0; LGPL only wi
 | opencv-python-headless | Apache-2.0 (OpenCV); wheel bundles FFmpeg under LGPL as a shared library | UVC thermal. Haar cascade files are **not used** (eye ROI is numpy dark-pupil + glint, ADR-0051) |
 | adafruit-circuitpython-mlx90640 | MIT | MLX90640 thermal |
 | gpiozero | BSD-3-Clause | IR LED gate |
+| bless | MIT | pod-side BLE GATT server for the phone/glasses link (`oiris/link/ble.py`; untested without a radio) |
 | picamera2 | BSD-2-Clause | Pi NoIR camera (Raspberry Pi OS package) |
 
 ## M-16 face models (not in the repo; downloaded only by `oiris face-match fetch-models`)
@@ -40,7 +41,7 @@ pytest (MIT), hypothesis (MPL-2.0), ruff (MIT), mypy (MIT), pip-licenses (MIT).
 | iw | ISC | managed-mode Wi-Fi scan (passive policy enforced) |
 | rtl_power (rtl-sdr) | GPL-2.0 | receive-only E-10 probe |
 | cryptsetup (LUKS2) | GPL-2.0 | Pi data volume (`scripts/pi_luks2_setup.sh` runs it as a separate executable) |
-| flite | BSD-style | Pi TTS |
+| flite | BSD-style (CMU; core BSD-like, GPL only in build tooling, not runtime; checked in the upstream COPYING 2026-10-29) | Pi/host TTS; Debian/Ubuntu package `flite` 2.2; CI installs it and runs real synthesis (M-06) |
 
 ## Android (see android/dependencies.txt)
 AndroidX core/fragment/biometric/camera (incl. camera-view)/sqlite (Apache-2.0); Bouncy Castle `bcprov-jdk18on` 1.78.1 (Bouncy Castle Licence, MIT-style: X25519, ChaCha20-Poly1305, BLAKE2s for the Kotlin Noise port); SQLCipher for Android (BSD-3-Clause); Mapsforge (LGPL-3.0 with exception). Android SDK/Gradle are build-time tools only. No Google Play Services, ML Kit or Firebase.
@@ -48,6 +49,9 @@ AndroidX core/fragment/biometric/camera (incl. camera-view)/sqlite (Apache-2.0);
 ## Algorithms and data
 - rPPG: own implementation of the published POS method (Wang et al., 2017). Patent status **unverified**.
 - AP clock skew: Jana & Kasera, MobiCom 2008 (method, own implementation).
-- Bluetooth SIG company identifiers / UUIDs: public assigned numbers (small excerpt).
+- Bluetooth SIG company identifiers / UUIDs: identifier->organisation facts from the public Bluetooth SIG Assigned Numbers (`company_identifiers.yaml`, bitbucket.org/bluetooth-SIG/public), retrieved 2026-10-29, 59 IDs curated into coarse types by `scripts/make_rf_tables.py` -> `oiris/features/rf_tables.json`. No licence file is published with the registry; only the factual ID/name pairs are used.
+- Camera OUI hints: 164 MA-L assignments of IP/home-security camera makers from the IEEE Registration Authority public listing (`oui.csv`), retrieved 2026-10-29 (factual registry data; a hint, never proof).
+- ArUco DICT_4X4_50 code words (50 x 16-bit integers) as in OpenCV's predefined dictionary (opencv/opencv, Apache-2.0); the detector itself is our numpy implementation (`oiris/features/aruco.py`).
+- Real eye-tracker recordings for the M-01 real-signal test: LaborTrack (Latifzadeh et al. 2025), preprocessed CSVs MIT (github.com/kayhan-latifzadeh/LaborTrack @5f95f84), raw data CC BY 4.0 (doi:10.5281/zenodo.15163456); participants signed consent forms (paper). **Not shipped**: fetched at test time by `scripts/fetch_eye_reference_data.py` (sha256-pinned) into the git-ignored `training-library/`.
 - Colormap stops approximate matplotlib's inferno/viridis (CC0).
 - **Not included**: speaker-embedding or anti-spoof model weights. ECAPA-TDNN (Apache-2.0 card, VoxCeleb data terms unverified) and AASIST (MIT code, ASVspoof data ODC-By) can be added as model packages through the model port after their data terms are verified. Piper and eSpeak NG are GPL-3.0 and excluded.

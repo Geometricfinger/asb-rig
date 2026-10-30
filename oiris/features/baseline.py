@@ -1,4 +1,6 @@
-"""M-07 per-location baselines and new-object-at-known-location (A10)."""
+"""M-07 per-location baselines and new-object-at-known-location (A10).
+Anchors are printed ArUco markers (DICT_4X4_50, detected by features/aruco.py) stuck at fixed
+spots; an anchor's key is its marker ID, found in the camera view, not a typed-in number."""
 from __future__ import annotations
 from dataclasses import dataclass, field
 import numpy as np
@@ -7,7 +9,8 @@ import numpy as np
 @dataclass
 class SiteBaseline:
     site_code: str
-    anchors: list[int] = field(default_factory=list)
+    anchors: list[int] = field(default_factory=list)   # registered ArUco marker IDs
+    anchor_poses: dict = field(default_factory=dict)   # marker ID -> (R, t) at registration, if intrinsics known
     emitters: set = field(default_factory=set)       # HMAC'd emitter keys seen in all baseline passes
     thermal_bg: dict = field(default_factory=dict)  # anchor -> median frame
     glints: dict = field(default_factory=dict)      # anchor -> list of (x,y)
@@ -43,3 +46,32 @@ def newobj_score(n_new_emitters: int, n_thermal: int, n_glints: int) -> tuple[fl
     """RF part is gated (reliable); optical parts are report-only weighted low."""
     v = min(1.0, 0.8 * min(n_new_emitters, 1) + 0.3 * min(n_thermal, 1) + 0.15 * min(n_glints, 1))
     return v, (0.8 if n_new_emitters else 0.4)
+
+
+def register_anchors(base: SiteBaseline, gray: np.ndarray, K: np.ndarray | None = None, side_m: float | None = None) -> list[int]:
+    """Detect markers in a setup frame and register them as this site's anchors."""
+    from . import aruco
+    found = aruco.detect(gray)
+    for m in found:
+        if m.id not in base.anchors:
+            base.anchors.append(m.id)
+        if K is not None and side_m:
+            base.anchor_poses[m.id] = aruco.pose(m, side_m, K)
+    return [m.id for m in found]
+
+
+def anchor_in_view(base: SiteBaseline, gray: np.ndarray) -> int | None:
+    """The registered anchor marker that is most prominent (largest) in this frame, or None."""
+    from . import aruco
+    seen = [m for m in aruco.detect(gray) if m.id in base.anchors]
+    return max(seen, key=lambda m: m.side_px).id if seen else None
+
+
+def pass_from_view(base: SiteBaseline, gray: np.ndarray, emitters: set, thermal: np.ndarray | None,
+                   glints: list | None) -> int | None:
+    """One baseline pass at whatever anchor the camera sees; returns that anchor (None = skipped)."""
+    a = anchor_in_view(base, gray)
+    if a is None:
+        return None
+    base.add_pass(emitters, {a: thermal} if thermal is not None else {}, {a: list(glints or [])})
+    return a
