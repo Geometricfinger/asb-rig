@@ -26,7 +26,7 @@ if [[ "$OS" == "darwin" ]]; then
   # M-15 Keychain biometric gate helper (Swift; LocalAuthentication + Security frameworks)
   swiftc -O macos/keychain_gate/main.swift -o "$OUT/O Iris.app/Contents/MacOS/keychain-gate"
   "$OUT/O Iris.app/Contents/MacOS/keychain-gate" status      # runs on CI; no biometrics there -> {"biometry": false}
-  OIRIS_MAC_GATE_HELPER="$OUT/O Iris.app/Contents/MacOS/keychain-gate" python3 -m pytest -q tests/test_mac_gate.py
+  OIRIS_MAC_GATE_HELPER="$OUT/O Iris.app/Contents/MacOS/keychain-gate" python3 -m pytest -q tests/test_audit_gaps.py -k "real_swift_helper or keychain"
   ditto -c -k --keepParent "$OUT/O Iris.app" "$OUT/o-iris-$COMMIT-macos-app-unsigned.zip"
   rm -rf "$OUT/O Iris.app"
 fi

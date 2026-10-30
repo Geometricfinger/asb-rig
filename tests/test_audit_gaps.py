@@ -357,3 +357,15 @@ def test_glasses_enroll_guide_shows_next_angle_and_tick():
 def test_android_vectors_are_current():
     r = subprocess.run([sys.executable, str(ROOT / "scripts/make_android_vectors.py"), "--check"], capture_output=True, text=True)
     assert r.returncode == 0, r.stdout + r.stderr
+
+
+@pytest.mark.skipif(not os.environ.get("OIRIS_MAC_GATE_HELPER"), reason="compiled Swift helper only on the macOS CI job")
+def test_real_swift_helper_on_macos():
+    g = KeychainBiometricGate(os.environ["OIRIS_MAC_GATE_HELPER"], service="org.oiris.ci-test")
+    st = g.status()
+    assert st["helper"] == "o-iris-keychain-gate" and isinstance(st["biometry"], bool)
+    if not st["biometry"]:                      # CI runners have no Touch ID: must refuse, never fall back to a password
+        with pytest.raises(GateUnavailable):
+            g.load()
+        with pytest.raises(GateUnavailable):
+            g.store(os.urandom(32))
